@@ -1,0 +1,5 @@
+4) crlibm (http://lipforge.ens-lyon.fr/projects/crlibm)
+	a) download, unpack
+	b) cd crlibm dir
+	c) ./configure
+	d) sudo make install
