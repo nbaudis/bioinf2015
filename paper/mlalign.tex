@@ -340,28 +340,12 @@ neighboring values {\bf of which matrices} of the three DP matrices.
 The memoization scheme (lookup table) for all possible transition penalties is shown in Figure~\ref{fig:memo}. 
 The penalties $C^i$ take one or two nucleotides as parameters.
 Thus they can be stored in a memoization table of $4$ and $16$ entries, respectively. 
-With a total of only $24$ memoized values, we substantially simplified and accelerated (by {\bf TODO how many orders of magnitude?}) the cell updates.
+With a total of only $24$ memoized values, we substantially simplified and accelerated (by {\bf TODO how many orders of magnitude?} {\bf Actually, I can't tell, because we hadn't had our benchmark suite in place back then. I could cherry pick some commits and throw together a benchmark run if that's really wanted, but I'd rather get rid of that claim.}) the cell updates.
 In addition, this simplification now allows to apply the logarithm for preventing numerical underflow.
 This was not possible before, since taking the logarithm of the original equation would have been too expensive. 
-It also kept the translation to SIMD-enabled code manageable {\bf what do you mean by manageable?}.
+It also kept the translation to SIMD-enabled code manageable {\bf what do you mean by manageable?} {\bf The complexity involved with having to translate the recurrence steps verbatim to SIMD instructions and optimizing them with confidence. I imagined that would be much more involved and harder to parallelize efficiently}.
 Furthermore, the simplification reduces the number of design decisions that are required regarding 
 memory layout and vectorization.
-
-At a later point of the project, it became evident that the indexed loads from memoized penalty matrices caused a performance degradation. 
-To solve this problem, we pre-compute a larger lookup table of vector-sized elements, that we index by a specific nucleotide permutation. 
-Consider the following example for AVX vector intrinsics.
-We need to calculate a bijective mapping for a set of four nucleotides to an integer representing one of the $4^4 = 256$ possible permutations (e.g., a perfect hash) 
-for $C^0$ and $C^2$, and $4^{2 \cdot 4} = 65536$ for $C^1$ respectively {\bf where do those C variables come fraom, have they been properly introduced? I don't think so!}. 
-The mapping is implemented as a base conversion from the set of 4 nucleotides to an unsigned integer via a appropriate bit-wise operations.
-
-While this approach has exponential space requirements as a function of the vector width, using a lookup table of $65536 \cdot 32$ bytes $= 2$ MB for $C^1$ for 
-the AVX version of our code was still feasible. 
-However, the evaluation of the resulting performance revealed that too much time is spent to fill the table, at least for our benchmark datasets. 
-Since the values in the table only depend on the likelihood model parameters, that is, it is independent of the input sequences at hand, 
-this approach can be re-considered in cases were this lookup table shall be re-used for multiple DP invocations. 
-This might be useful when calculating pair-wise alignments of $n$ sequences under the same model parameters 
-{\bf not sure if we should write this here, at leats as long as the parameter t is also required to calculate the values in that table, need to double-check}
-{\bf I don't understand the following sentence, please re-forumulate it} The scaling to wider vector registers could be retained by loading a register in packs of four values.
 
 \begin{figure}
 \[
@@ -374,9 +358,25 @@ This might be useful when calculating pair-wise alignments of $n$ sequences unde
   M^2(i,j)&=C^2(b_j)max\{M^1(i,j-1), M^2(i,j-1)\}
 \end{aligned}
 \]
-\caption{A re-formulation of the DP step using the memoized sub-problems $C^i$ {\bf you should have explained what the C is much earlier!}}
+\caption{A re-formulation of the DP step using the memoized sub-problems $C^i$ {\bf you should have explained what the C is much earlier!} {\bf I think we referenced it much earlier, so I moved this nearer to its 'declaration site'.} }
 \label{fig:memo}
 \end{figure}
+
+At a later point of the project, it became evident that the indexed loads from the memoized penalty matrices $C^0$, $C^1$, $C^2$ as defined in Figure~\ref{fig:memo} caused a performance degradation. 
+To solve this problem, we tried to pre-compute a larger lookup table of vector-sized elements, that we indexed by a specific nucleotide permutation. 
+Consider the following example for AVX vector intrinsics.
+We need to calculate a bijective mapping for a set of four nucleotides to an integer representing one of the $4^4 = 256$ possible permutations (e.g. a perfect hash) 
+for $C^0$ and $C^2$, and $4^{2 \cdot 4} = 65536$ for $C^1$ respectively {\bf where do those C variables come fraom, have they been properly introduced? I don't think so!} {\bf Those are the cached values that were on the next page. Moved them up and added an introductory phrase at the begin of the paragrapgh.}. 
+The mapping is implemented as a base conversion from the set of 4 nucleotides to an unsigned integer via appropriate bit-wise operations.
+
+While this approach has exponential space requirements as a function of the vector width, using a lookup table of $65536 \cdot 32$ bytes $= 2$ MB for $C^1$ for 
+the AVX version of our code was still feasible. 
+However, the evaluation of the resulting performance revealed that too much time is spent to fill the table, at least for our benchmark datasets. 
+Since the values in the table only depend on the likelihood model parameters, that is, it is independent of the input sequences at hand, 
+this approach can be re-considered in cases were this lookup table shall be re-used for multiple DP invocations. 
+This might be useful when calculating pair-wise alignments of $n$ sequences under the same model parameters 
+{\bf not sure if we should write this here, at leats as long as the parameter t is also required to calculate the values in that table, need to double-check}{\bf That's a good point. I was mentally pulling t into the model, which is incorrect, unless t stays constant. }
+{\bf I don't understand the following sentence, please re-forumulate it} {\bf Tried to clarify with the part following e.g. } The scaling to wider vector registers could be retained by loading a register in packs of four values, e.g. for an 8 element vector, loading the lower and upper 4 values separately from the lookup table for 4 element vectors allows the space complexity to stay constant with respect to vector width.
 
 
 \subsection{Vectorization}
@@ -423,8 +423,8 @@ for all possibles value of $n$ (i.e., $3$, $2$, and $1$).
 
 When vectorizing along the anti-diagonals, accessing the memory in the dynamic programming matrices when they are stored in a row-, or column-major scheme 
 prevents deploying efficient vector operations for loading the values from the matrices into vector registers. 
-For such a memory layout, the performance of the inner DP loop becomes heavily memory-bound. 
-Therefore, we used the aforementioned memory layout {\bf TODO: add cross-ref}, such that \texttt{load} and \texttt{store} operations for copying data directly from the anti-diagonal 
+For such a matrix layout, the performance of the inner DP loop becomes heavily memory-bound. 
+Therefore, we used the aforementioned diagonalized matrix layout together with an struct of arrays approach (see section~\ref{ssec:memorylayout}) {\bf TODO: add cross-ref} {\bf done}, such that \texttt{load} and \texttt{store} operations for copying data directly from the anti-diagonal 
 into vector registers can be utilized. 
 Those \texttt{load} and \texttt{store} operations come in two flavors: There exist \texttt{load} and \texttt{store} operations for aligned and unaligned data. 
 Using the unaligned versions can decrease memory access performance. However, 
@@ -439,13 +439,17 @@ When loading data from the matrices into SSE3/AVX vector registers, the data has
   \label{fig:unaligned}
 \end{figure}
 
-Figure~\ref{fig:unaligned} shows how the byte offset for the anti-diagonals is shifted from one diagonal to the next {\bf to achieve a proper 16/32 byte alignment I assume?}.
-To easily determine the aligned addresses for loading vectors we modified the indexing function {\bf TODO cross ref!} for the anti-diagonals. 
-The main idea is to store each anti-diagonal starting at a 16/32 byte-aligned address. {\bf is the following edit I mad actually correct?} Thereby, all load and store operations are automatically correctly aligned.
+Figure~\ref{fig:unaligned} shows how the byte offset for the anti-diagonals is shifted from one diagonal to the next {\bf to achieve a proper 16/32 byte alignment I assume?} {\bf Not quite, it's how alignment to 16/32 byte boundaries is not guaranteed when just tightly packing anti-diagonal after anti-diagonal linearly into the buffer. We modified the indexing function so that it inserts the appropriate padding cells, such that the beginning (well, actually each 2nd cell, the first was initialized sequentially before the tight loop and thus can be unaligned) of an anti-diagonal is always aligned. Check out the comment here: https://goo.gl/r8H6qF. It's pretty technical, but I hope this clears things up. Note how the entire first row is unaligned and how the second row is always aligned to multiples of 4.}
+To easily determine the aligned addresses for loading vectors we modified the indexing function for diagonalized access (see also section~\ref{ssec:memorylayout}){\bf TODO cross ref!} {\bf done} for the anti-diagonals. 
+The main idea is to store each anti-diagonal starting at a 16/32 byte-aligned address. {\bf is the following edit I mad actually correct?} {\bf It's not that all load and stores are aligned (that's not possible), but that we choose a layout where the most possible loads/stores are aligned. } Thereby, all load and store operations are guaranteed to happen on a predictable alignment, which we choose so that most of the operations happened on a proper alignment boundary.
 %When iterating over anti-diagonal elements in a vectorized fashion, the vectors are then automatically constructed from data that is aligned to the required address offset.
 
-{\bf The following three sentences need to be re-written, they are rather confusing} The starting address for the anti-diagonal is not the required alignment address for loading and storing the vectors, but a larger address minus the size of one double floating point value. 
-This is due to the fact that the 0th row of the matrix is pre-computed during the matrix initialization and therefore a value is never written to this row. Another reason for this decision is that it is impossible to load all vectors needed for the computation inside the tight loop of the algorithm from an aligned addresses.
+{\bf The following three sentences need to be re-written, they are rather confusing}  
+{\bf I rewrote them. Is it clearer now?}
+We strived for a scheme where the row with index 1 (zero-based) is aligned, because the row with index 0 is initialized prior to the DP loop. This resulted in each anti-diagonal to to be aligned on a rather strange alignment ($a - 8$ where $a$ is the alignment boundary in bytes, so 24 bytes for the 32 byte example). 
+
+%The starting address for the anti-diagonal is not the required alignment address for loading and storing the vectors, but a larger address minus the size of one double floating point value. 
+%This is due to the fact that the row with index 0 of the matrix is pre-computed during the matrix initialization and therefore a value is never written to this row. Another reason for this decision is that it is impossible to load all vectors needed for the computation inside the tight loop of the algorithm from an aligned addresses.
 
 \begin{figure}[ht!]
   \centering
@@ -456,7 +460,7 @@ This is due to the fact that the 0th row of the matrix is pre-computed during th
 
 In Figure~\ref{fig:alignment}, we show the required values for computing the inner DP loop for AVX (vector length: $4$ double precision values). 
 The elements marked in red are the ones we want to compute in the current step. 
-For calculating a single element, we require three elements from the two previous columns. 
+For calculating a single element, we require three elements from the two previous anti-diagonals. 
 The element directly above (yellow) and left (blue) to the current element and the diagonal element above and to the left  (green) need to be loaded from the DP matrices. 
 The Figure illustrates that (neglecting the asymptotically irrelevant boundary cases) one of the following four conditions holds:
 \begin{enumerate}
@@ -467,7 +471,7 @@ The Figure illustrates that (neglecting the asymptotically irrelevant boundary c
 \end{enumerate}
 
 For the computation, we need to perform three \texttt{load} operations in total for the blue, yellow, and green elements and one \texttt{store} operation for the red elements. 
-Since the {\em unaligned} \texttt{store} operation has greater relative performance impact than the unaligned load operations {\bf why?}, 
+Since the {\em unaligned} \texttt{store} operation has greater relative performance impact than the unaligned load operations {\bf why?}{\bf Good question :) purely speculative, I guess. Although stores seem to take longer than loads. } , 
 we ensured that either the first or the second of the above conditions is met. 
 The first condition is implemented for the opening and middle part, the second condition holds true for the closing part of the DP matrices.
 
