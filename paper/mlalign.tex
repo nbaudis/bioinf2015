@@ -239,18 +239,27 @@ We calculate the offset via the original Cantor pairing function.
 \end{figure}
 
 In Figure~\ref{fig:pairingfunc}, we show the index calculations for the anti-diagonals of a $5\times3$-matrix. 
-The blue border denotes the bounds {\bf ?} of the DP matrix, the blue cells represent the opening part, 
+The blue box denotes the boundaries {\bf ?} of the DP matrix, the blue cells represent the opening part, 
 the green cells inside the matrix the middle, and the red cells inside the matrix the closing part. 
-Green and red cells outside the matrix boundaries represent the Cantor pairing functions for the offset calculation for the middle and closing part, respectively. 
-For this {\bf for what?}, only the first rows of those {\bf all?} pairing functions are needed. 
+Green and red cells outside of the matrix boundaries represent the offset calculation for the middle and closing part, respectively. 
+For the DP calculations {\bf for what?}, only the indices that correspond to
+entries in the DP matrix  {\bf of those {\bf all?} pairing functions} are
+needed. 
 
 Given the anti-diagonal indexing scheme for a single matrix, we need to 
 devise the memory layout for the three DP matrices ($M_0,M_1,M_2$) next.  
-This is because, calculating a DP value requires 
-accessing all three matrices.  
-{\bf I am not sure I understand the following question, please re-formulate} Therefore, the access pattern inside the matrices follows the same anti-diagonals.  
-To improve data locality while, at the same time, using efficient {\bf vector?} load and store operations, 
-the matrix data has to be arranged accordingly.  
+This is because calculating a DP value requires 
+accessing values from all three matrices, which are located at different
+positions in memory.  
+{\bf I am not sure I understand the following question, please re-formulate} 
+{\bf -- Simplified the sentences, the Therefore-sentence wasn't really required i
+think. }
+%Therefore, the access pattern inside the matrices follows the same anti-diagonals.  
+To improve data locality while, at the same time, using efficient {\bf vector?}
+vector load and store operations, 
+the matrix data has to be arranged accordingly.  Since we are using
+double-precision floating-point numbers for all calculations, an SSE3 vector
+($128$ bit) holds 2 values, while an AVX vector ($256$ bit) holds 4 values.
 To this end, we evaluated the following three alternative matrix layouts (see Figure~\ref{fig:datalayout}):
 
 \begin{figure}[ht!]
@@ -261,7 +270,7 @@ To this end, we evaluated the following three alternative matrix layouts (see Fi
 \end{figure}
 
 \paragraph*{Struct of Arrays (SoA)} ({\small\texttt{struct \{ double m0[n], m1[n], m2[n]; \} data;}}) 
-This layout allows for simple {\bf vector?} load and store patterns. 
+This layout allows for simple {\bf vector?} vector load and store patterns. 
 However, the three matrices are located in separate memory regions, which decreases
 cache efficiency and data locality.
 
@@ -280,20 +289,28 @@ them, which requires several, potentially costly, vector shuffle operations.
 
 Figure~\ref{fig:shufflesse} illustrates these shuffle operations. 
 For $m_x^y$, the subscript $x$ indicates
-the index of the matrix and the superscript $y$ the SSE3/AVX vector element index $y$ {\bf state that we use double precision!}.
-The first row of the Figure depicts the {\em AoS} data layout. 
-Here, we perform an (aligned {\bf if you say aligned you need to be more specific}) vector \texttt{load} operation 
+the index of the matrix and the superscript $y$ the SSE3/AVX vector element
+index $y$ {\bf state that we use double precision!}{\bf Added a sentence about
+double-precision and vector size above}.  The first row of the Figure depicts the {\em AoS} data layout. 
+Here, we perform a {\bf if you say aligned you need to be more
+specific}{\bf -- Removed the "aligned", I think it's not important while discussing
+the shuffle operations} vector \texttt{load} operation
 to load the data into temporary vector registers. 
 Thereafter, we shuffle the temporary vectors such that (i) each vector only contains elements from one of the tree DP matrices and 
-(ii) the individual elements are in the correct order with respect to  the {\bf anti-?} diagonal. 
-For both, SSE3 as well as AVX instructions we need to perform three \texttt{load} operations and three \texttt{shuffle}/\texttt{permute} operations. 
-For AVX, we also require three \texttt{blend} operations to put the data elements into the correct order. 
+(ii) the individual elements are in the correct order with respect to  the {\bf
+anti-?} anti-diagonal. 
+For both SSE3 as well as AVX instructions, we need to perform three \texttt{load} operations and three \texttt{shuffle}/\texttt{permute} operations. 
+For AVX, three additional \texttt{blend} operations are required to put the data elements into the correct order. 
 
 \paragraph*{Array of Structs of Arrays (AoSoA)} ({\small\texttt{struct \{ double m0[v],
-m1[v], m2[v]; \} data[m];}}) While this layout solves both of the previous problems {\bf state those problems again!},
-grouping vectors {\bf what do you mean by grouping vectors?} in advance complicates DP cell access above the current anti-diagonal.
-These values would {\bf would or do not lie?} not lie within vector boundaries and would {\bf would or do require?} then
-again {\bf either?} require \texttt{shuffle}/\texttt{permute} operations or partial loads {\bf explain what you mean by partial loads!}.
+m1[v], m2[v]; \} data[m];}}) This layout groups vectors in advance, i.e.,
+adjacent elements of each matrix are already in an SSE3/AVX vector.  While solving both of the previous
+problems {\bf state those problems again!} (low data locality and costly vector operations),
+grouping vectors {\bf what do you mean by grouping vectors?}{\bf -- Added an
+explanation at the beginnning} in advance complicates DP cell access above the current anti-diagonal.
+These values do {\bf would or do not lie?} not lie within vector boundaries and would {\bf would or do require?} then
+again {\bf either?} require either \texttt{shuffle}/\texttt{permute} operations
+or partial loads {\bf explain what you mean by partial loads!} (i.e., accessing single elements of several vectors).
 
 \paragraph*{} All three layouts have different performance characteristics with respect to
 cache efficiency {\bf Note to team I: we usually say cache efficiency and data locality, but not cache locality!} 
@@ -318,7 +335,7 @@ These values are constant and given as input parameters.
 We also observed that the cell updates in the DP algorithm only require a constant number of common sub-calculations/components: 
 When the nucleotide values at the current indices in the two sequences are available, 
 the score (cell value) can be computed using only the current nucleotide pair and the 
-neighboring values {\bf of which matrices} in the dynamic programming matrix.
+neighboring values {\bf of which matrices} of the three DP matrices.
 
 The memoization scheme (lookup table) for all possible transition penalties is shown in Figure~\ref{fig:memo}. 
 The penalties $C^i$ take one or two nucleotides as parameters.
@@ -370,14 +387,26 @@ $M_0$, $M_1$, and $M_2$ using \texttt{add}, \texttt{max}, \texttt{load}, and \te
 operations for both SSE3 and AVX instructions.  
 Using these operations, we can process $n$ matrix elements in parallel.  
 Depending on the location of the vector on the anti-diagonal that is being processed, there will be $0 < n \leq V$ valid elements to operate on 
-per vector (with vector size $V = 4$ for AVX and $V = 2$ for SSE3 {\bf TODO: we need to state in the beginning that we used double precision}). 
+per vector (with vector size $V = 4$ for AVX and $V = 2$ for SSE3 {\bf TODO: we
+need to state in the beginning that we used double precision}{\bf Added a sentence about
+double-precision and vector size above}). 
 
-Although we ensured aligned {\bf need to be more specific what you mean by aligned, it's not clear to a general readership} 
+Usually, data that has to be loaded into vectors is aligned, i.e., the starting
+address of the data is within certain byte boundaries. This alignment allows to
+use the aligned versions of the vector \texttt{load} and \texttt{store} operations,
+which are faster than the unaligned versions.
+Although we ensured aligned {\bf need to be more specific what you mean by
+aligned, it's not clear to a general readership}{\bf Added a sentence about
+alignment} 
 access to a majority of the data (as will be explained in
 Section~\ref{ssec:dataalignment}), we used the unaligned vector \texttt{load} and \texttt{store}
 operations \texttt{loadu\_pd} and \texttt{storeu\_pd} for the SSE3 and AVX versions. 
-{\bf I don't get the following sentence, whyt was unaligned load necessary if you were able to test on aligned data???} 
-This does not represent a disadvantage for the
+{\bf I don't get the following sentence, whyt was unaligned load necessary if
+you were able to test on aligned data???}{\bf -- We aligned the data so that the
+  majority of the vectors start at an aligned address. If, for example,
+  M2(i-1,j) (the same position shifted by -1 vertically) needs to be loaded into
+a vector, we can only do that using an unaligned load.}
+  This does not represent a disadvantage for the
 performance, since we could not identify significant performance impacts of
 using unaligned intrinsics on aligned data.
 
