@@ -107,7 +107,7 @@ A given evolutionary model assigns a weight to each of these three basic operati
 These are then used to design a dynamic programming algorithm that computes the maximum likelihood pair-wise alignment between two DNA sequences. 
 
 As substitution model, we assume the standard stochastic nucleotide substitution model {\bf TODO by whom actually?}. 
-{\bf TODO the other two?} 
+{\bf TODO the other two? We used the F81 model by Felsenstein -- as required by the assignment sheet of the practical}
 The algorithm computes the optimal maximum likelihood sequence alignment using three matrices, one for each {\bf TODO}.
 The algorithm is given by the following dynamic programming recurrence: 
 \[
@@ -508,12 +508,52 @@ For example, we observed that $$M^0(i+1,0) = M^0(i,0) + \log(\gamma_{i+1}) + \lo
 After replacing $\beta(t), \bar{p_0}(t), \gamma_i$ and $\zeta_i$ by their respective formulas, we observed that some terms appear multiple times. 
 Operating in log-space allowed us to further simplify the formulas. Especially the logarithmic rules $\log(a*b) = \log(a) + \log(b)$ and $\log(a/b) = \log(a) - \log(b)$ 
 allowed us to replace multiplications and divisions with additions and subtractions.
-The resulting formulas can be found in Appendix~\ref{sec:formulas}. {\bf please include them here!}
+{\bf please include them here! Okay, here they are:}
+
+In the following formulas, $1 \leq i \leq n$ and $1 \leq j \leq m$, if not specifically denoted otherwise.
+
+\paragraph{Initialization of the Matrices}
+\label{sec:formulas:init}
+\begin{align*}
+M^0(0,0) &= -\infty \\
+M^1(0,0) &= \log(\gamma_0) + \log(\zeta_1)
+		= \log(1-\frac{\lambda}{\mu}) + \log (1 - \lambda * \beta) \\
+M^2(0,0) &= -\infty \\
+M^0(1,0) &= \log(\gamma_1) + \log(\zeta_1) + \log(\bar{p_0}) + \log(\pi_{a_1}) \\
+		&= \log(1- \frac{\lambda}{\mu}) + \log(\lambda) + \log(1- \lambda *\beta) + \log(\beta) + \log(\pi_{a_1}) \\
+M^0(i,0) &= M^0(i-1,0) + 2*\log(\lambda) + 2*\log(\beta) + \log(\pi_{a_i}), i \geq 2 \\
+M^1(i,0) &= -\infty \\
+M^2(i,0) &= -\infty \\
+M^0(0,j) &= -\infty \\
+M^1(0,j) &= -\infty \\
+M^2(0,1) &= \log(\gamma_0) + \log(\zeta_2) + \log(\pi_{b_1}) \\
+		&= \log(1- \frac{\lambda}{\mu}) + \log(1-\lambda*\beta) + \log(\lambda) + \log(\beta) + \log(\pi_{b_1}) \\
+M^2(0,j) &= M^2(0, i-1) + \log(\lambda) + \log(\beta) + \log(\pi_{b_i}), j \geq 2 \\
+\end{align*}
+
+\paragraph{Further Initialization}
+\label{sec:formulas:further}
+\begin{align*}
+M^0(i,j) &= \log(\lambda) + \log(\beta) + \log(\pi_{a_i}) \\
+M^1(i,j) &= \log(\lambda) - \log(\mu) + \log(\pi_{a_i}) + \log(\max\{P_{a_i \to b_j} * \bar{p_1}, \pi_{b_j} * \bar{p_1}\}) \\
+	&= \log(\lambda) - \log(\mu) + \log(\pi_{a_i}) + \log(1-\lambda * \beta) + \max \begin{cases}
+	\log(P_{a_i \to b_j}) - \mu*t, \\
+	\log(\pi_{b_j}) + \log(1- e^{- \mu*t} - \mu * \beta)
+\end{cases} \\
+M^2(i,j) &= \log(\lambda) + \log(\beta) + \log(\pi_{b_j})
+\end{align*}
+
+\paragraph{Dynamic Programming Step}
+\begin{align*}
+M^0(i,j) &= M^0(i,j) + \max\{M^0(i-1,j), M^1(i-1,j), M^2(i-1,j)\} \\
+M^1(i,j) &= M^1(i,j) + \max\{M^0(i-1,j-1), M^1(i-1,j-1), M^2(i-1,j-1)\} \\
+M^2(i,j) &= M^2(i,j) + \max\{M^1(i,j-1), M^2(i,j-1)\}
+\end{align*}
 
 \subsubsection{Pre-computing the Logarithms}
 In general, replacing a multiplication by two logarithms and an addition is more costly. 
 However, we managed to circumvent the additional computational cost of log space. 
-This is because our formulas consist of sums of only $25$ different logarithms {\bf explain why this is the case} which we can simply 
+This is because our formulas consist of sums of only $25$ different logarithms {\bf explain why this is the case; SL: Because there are $25$ different logarithms in the pasted formulas above \ldots to be honest I don't really know how to explain this other than by inserting formulas, applying logarithm rules and observing something like the values for later entries are the values for earlier entries plus something} which we can simply 
 pre-compute.
 
 A major disadvantage of logarithmic transformations is that any error in the logarithm computation accumulates over a series of operations. 
@@ -553,12 +593,12 @@ Then, we used the Matrix as Array approach as before, but containing \texttt{Mat
 
 Let us now consider the example in Figure~\ref{fig:cachelines} again. 
 With six matrix lines filling one cache line, a cache line now contains data from all three matrices. 
-Consequently, all operations for a single computational iteration {\bf what do you mena by computational iteration?} 
+Consequently, all operations for a single computational iteration {\bf what do you mena by computational iteration? SL: A step in the inner for-loop, i.e. the computation of a single matrix entry after the initialization already happened} 
 will need to access two cache lines at most. 
 If we assume a cache capacity of two cache lines again, cache misses will now only occur when traversing row boundaries.
 
-By using the \texttt{perf stat} tool, we found that using the \texttt{MatrixEntry} data structure indeed reduced {\bf by how much, please quantify!} 
-the number of page faults {\bf is this really called page faults? shouldn't it be cache misses?}.
+By using the \texttt{perf stat} tool, we found that using the \texttt{MatrixEntry} data structure indeed reduced {\bf by how much, please quantify! SL: We had problems to quantify this -- sucessive runs of the code using perf stat returned highly oscillating values, but most of the time the number page faults was lower for the version with the MatrixEntry structure than for the version without}
+the number of page faults {\bf is this really called page faults? shouldn't it be cache misses? SL: Yes. The perf stat call only prints the number of page faults that occured during the run. No cache misses measured.}.
 
 \begin{algorithm}
 
@@ -627,11 +667,11 @@ the entries of a single coordinate for all three matrices. The structs are store
 
 Since each iteration in the dynamic programming step needs to access the top, left, and upper-diagonal elements of the matrices, 
 a wave-front-like storage of the matrix (see Figure~\ref{fig:wavefront}) entries yields the lowest amount of expected cache misses. 
-Finding an easy-to-compute {\bf do you mean easy or inexpensive?} closed formula that maps the index position $(i,j)$ representing the row and column of a matrix 
+Finding an inexpensive-to-compute {\bf do you mean easy or inexpensive? SL: changed it} closed formula that maps the index position $(i,j)$ representing the row and column of a matrix 
 to wave-front-coordinates turned out to be challenging. 
 The index of the diagonal is $i+j$, the sum of row index and column index. 
 Determining the number of elements in the diagonal and especially the correct position within the diagonal proved more difficult though.
-Since were not able to come up with an easy {\bf still not sure what you mean by easy} formula for the mapping, 
+Since were not able to come up with an easy {\bf still not sure what you mean by easy; SL: Fast enough to compute. The indexing formulas we came up with during the practical were too computationally expensive and required more computations than the actual filling of the matrices} formula for the mapping, 
 we tried storing pre-computed index mappings in an additional matrix. 
 However, this slowed down the program as computing the mapped indices required more arithmetic operations than needed for the actual TKF algorithm.
 Figure~\ref{fig:offset} illustrates the main problem which has to be solved 
@@ -920,7 +960,7 @@ The largest performance gain was attained via a more cache-efficient data struct
 For this, we used profiling tools such as \texttt{perf} and \texttt{valgrind cachegrind} for the first time {\bf correct?}. 
 Finally,  we concluded that \verb|C++| is appropriate for HPC projects, provided that, the problem and data-structures at hand are well understood.
 
-{\bf TODO: apart from SIMD were there any other new techniques or tools (e.g. cache analysis, clang compiler etc.) you used for the first time}
+{\bf TODO: apart from SIMD were there any other new techniques or tools (e.g. cache analysis, clang compiler etc.) you used for the first time; SL: I didn't use clang before, only gcc. Perf was also new to me.}
 
 \subsection{What did the Teacher learn?}
 
