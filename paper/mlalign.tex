@@ -497,7 +497,7 @@ are amortized by the additional overhead ({\bf TODO add cross-ref to the section
 As the TKF91 algorithm performs successive multiplications on floating point numbers, preventing numerical underflow
 {\em is} a major issue. Underflow can occur, even for short input sequences with less than $100$ nucleotides each.
 To address this issue we transformed all computations into log-space, to add logarithms of probabilities instead of multiplying probabilities.
-While it is still possible to experience under- or overflow {\bf why overflow, please explain!} even after this transformation, 
+While it is still possible to experience under- or overflow {\bf why overflow, please explain! Pierre: I think we meant when transforming a problem into logspace in general, but reading on the text is very specific, so I would remove the ``overflow''} even after this transformation, 
 this is highly unlikely to occur for practical (empirical) input data.
 We did not observe any numerical issues for the range of input parameters values and sequence lengths (up to and including $10000$ nucleotides) 
 we tested.
@@ -687,7 +687,7 @@ While the required offsets are constant within a {\bf anti?}diagonal, they chang
 %- store sequences as array of integers, used as a fast way to index precomputed logarithm values
 %- fill matrices simultaneously (in the same loop)
 
-\subsubsection{Vectorization Attempts}
+\subsection{Vectorization Attempts}
 \label{sec:vector}
 During code development we conducted a partial vectorization for two of our implementations: 
 the basic Log-space implementation (Section~\ref{sec:log}) and the improved Log-space implementation, using a more 
@@ -701,11 +701,11 @@ Additionally, as the initializations are completely independent of each other, t
 Several code transformations were necessary to vectorize the code. 
 First, we needed to guarantee that vector \texttt{load} and \texttt{store} operations are invoked on correctly aligned memory addresses. 
 Secondly, we needed to devise a strategy for iterating over matrices and handling matrix sizes that are not multiples of the vector width.
-Finally, we needed to store all calculation parameters {\bf what do you mean by calculation parameters?} in the appropriate vector types and 
+Finally, we needed to store calculation terms, such as the $\log(\pi)$'s and $P_{a_i \to b_j}$'s, {\bf what do you mean by calculation parameters? Pierre: added some clarification} into the appropriate vector types and 
 had to replace all basic arithmetic operations by their vectorized counterparts.
 
 \subsubsection{Log-space implementation}
-For the vectorization of the basic {\bf did you properly introduce what the basic implementation is?} 
+For the vectorization of the basic {\bf did you properly introduce what the basic implementation is? Pierre: First paragraph in ``Vectorization attempts'' we name it as such, provide a back reference to 4.1. Maybe we could introduce it directly under the 4.1 section header? then back ref here again} 
 Log-space implementation we implemented appropriate memory alignment by using the \texttt{\_\_attribute\_\_(aligned(\textit{size}))} attribute for stack allocations, 
 and the \texttt{posix\_memalign} function for heap allocations.
 
@@ -724,30 +724,29 @@ As Figure~\ref{fig:aos} shows, using the Array-of-Structs scheme results in a no
 As a consequence, simply loading and storing vector registers cannot be used here. 
 To this end, we implemented load and store operations that fit our data structure. These operations rely on vector functions that load and store single double precision floating point values. 
 An advantage of this is that correct data alignment is not required any more. 
-However, we believe {\bf why do you believe this, don't you have experimental evidence?} that this approach also induces a significant performance overhead 
-compared to the classically used operations {\bf what are classically used operations?}.
+However, we believe {\bf why do you believe this, don't you have experimental evidence? Pierre: we didn't test them in isolation, but we assume that the load/store intrinsics that require contig. memory (\_mm\_load\_pd) work faster than my function using \_mm\_loadl\_pd and \_mm\_loadh\_pd} that this approach also induces a significant performance overhead 
+compared to load/store intrinsics that work on contiguous memory. {\bf what are classically used operations? Pierre: changed it}.
 
 \subsubsection{Thoughts on wave-front vectorization}
 {\bf Maybe somehow make the wavefront parts more consistent to avoid redundnacies?} 
 As the dynamic programming step of the TKF91 algorithm has data dependencies to the cells left of, above and diagonally left above of the cell to be computed, 
 parallelization/vectorization requires a \textit{wave-front} approach.
 
-In a wave-front parallelization, matrix entries are not computed by row or by column, but rather by computing the entries of each \textit{anti-diagonal} in parallel. 
+In a wave-front parallelization scheme, matrix entries are not computed by row or by column, but rather by computing the entries of each \textit{anti-diagonal} in parallel. 
 Crucially, the individual anti-diagonals have to be computed sequentially and in-order when dependencies exist between subsequent anti-diagonals. 
 In this case, the current anti-diagonal is the front of the wave traversing the DP matrix.
 
-{\bf The following sentence is too long and confusing, please re-formulate!} As the log-space {\bf you use log-space inconssitently sometimes Log-spaca and sometimes as log-space} 
-version of TKF91 reduces the operations that would require such a wave-front approach for parallelization to finding the greatest of two to three values, 
-the relative amount of time spent doing so represents a negligible part of the overall algorithm. 
+{\bf The following sentence is too long and confusing, please re-formulate! Pierre: done} The log-space {\bf you use log-space inconssitently sometimes Log-spaca and sometimes as log-space} 
+version of TKF91 reduces the dynamic programming step to finding the greatest of two to three values, depending on the matrix. This in turn meant, that the relative amount of time spent doing so represents a negligible part of the overall algorithm. 
 Nevertheless, we invested some time to devise a vectorized wave-front version of the program.
 
 Initially, we attempted to find a suitable way for storing and accessing the matrix cells, 
 to store data contiguously with respect to the wave-front data access pattern. 
-We concluded that merely accessing {\bf accessing or indexing?} a cell, using the usual row-, and column coordinates, requires a significant amount of computation by itself. 
-Most importantly, it {\bf what?} requires significantly more arithmetic operations {\bf please quantifdy!} than the actual computations conducted for each matrix entry.
+We concluded that merely indexing {\bf accessing or indexing? Pierre: I guess indexing is more specific, to me accessing encompassed indexing. changed it} a cell, using the usual row-, and column coordinates, requires a significant amount of computation by itself. 
+Most importantly, indexing a cell {\bf what? Pierre: changed it} requires significantly more arithmetic operations {\bf please quantifdy! Pierre: we never found out, we abandoned trying to find a indexing formula when we realized that just accessing would require on the order of 20-30 operations,as opposed to the normal 2-3} than the actual computations conducted for each matrix entry.
 
-Furthermore, our preliminary benchmarks had yielded absolutely no performance increase for the vectorized versions of either major implementation {\bf what are thos major im,plementations, maybe you 
-should find better names for them}. 
+Furthermore, our preliminary benchmarks had yielded absolutely no performance increase for the vectorized versions of either the basic log-space, or the enhanced, Array-of-Structs implementation{\bf what are thos major im,plementations, maybe you 
+should find better names for them Pierre: tried to name them}. 
 As a consequence, we abandoned the wave-front vectorization approach.
 
 

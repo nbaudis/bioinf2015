@@ -28,72 +28,73 @@
 \citation{TKF91}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Memoization}{7}}
 \newlabel{ssec:memo}{{3.3}{7}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Vectorization}{8}}
-\newlabel{ssec:vectorization}{{3.4}{8}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces A re-formulation of the DP step using the memoized sub-problems $C^i$ {\bf  you should have explained what the C is much earlier!}}}{9}}
-\newlabel{fig:memo}{{5}{9}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Data Alignment}{9}}
-\newlabel{ssec:dataalignment}{{3.5}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces A re-formulation of the DP step using the memoized sub-problems $C^i$ {\bf  you should have explained what the C is much earlier!} {\bf  I think we referenced it much earlier, so I moved this nearer to its 'declaration site'.} }}{8}}
+\newlabel{fig:memo}{{5}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Vectorization}{9}}
+\newlabel{ssec:vectorization}{{3.4}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Data Alignment}{10}}
+\newlabel{ssec:dataalignment}{{3.5}{10}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Shift of the byte offset of the anti-diagonals}}{10}}
 \newlabel{fig:unaligned}{{6}{10}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Outline of the data required for an operation in the DP loop}}{10}}
-\newlabel{fig:alignment}{{7}{10}}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation of Team II}{11}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Mathematical Optimization}{11}}
-\newlabel{sec:log}{{4.1}{11}}
-\@writefile{toc}{\contentsline {subsubsection}{Numerical Underflow Prevention}{11}}
-\citation{boost}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Outline of the data required for an operation in the DP loop}}{11}}
+\newlabel{fig:alignment}{{7}{11}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation of Team II}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Mathematical Optimization}{12}}
+\newlabel{sec:log}{{4.1}{12}}
+\@writefile{toc}{\contentsline {subsubsection}{Numerical Underflow Prevention}{12}}
 \@writefile{toc}{\contentsline {subsubsection}{Simplifying the Formulas}{12}}
-\@writefile{toc}{\contentsline {subsubsection}{Pre-computing the Logarithms}{12}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Matrix Storage Schemes}{12}}
-\newlabel{sec:caching}{{4.2}{12}}
-\@writefile{toc}{\contentsline {subsubsection}{Matrix as Array}{12}}
-\@writefile{toc}{\contentsline {subsubsection}{Array-of-Structs Data Structure}{12}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Relation of cache lines and matrices, using the method of allocating each matrix separately(\textbf  {a)}) and the Array-of-Structs method (\textbf  {b)}). Each color represents a distinct cache line.}}{13}}
-\newlabel{fig:cachelines}{{8}{13}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Array-of-Structs data structure used to store the three matrices in memory. Each \texttt  {MatrixEntry} elemnt stores the entries of a single coordinate for all three matrices. The structs are stored contiguously, as the figure depicts, in row-major order.}}{13}}
-\newlabel{fig:aos}{{9}{13}}
+\citation{boost}
+\@writefile{toc}{\contentsline {subsubsection}{Pre-computing the Logarithms}{13}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Matrix Storage Schemes}{13}}
+\newlabel{sec:caching}{{4.2}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{Matrix as Array}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{Array-of-Structs Data Structure}{13}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Relation of cache lines and matrices, using the method of allocating each matrix separately(\textbf  {a)}) and the Array-of-Structs method (\textbf  {b)}). Each color represents a distinct cache line.}}{14}}
+\newlabel{fig:cachelines}{{8}{14}}
 \@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces The dynamic programming step, row-major version}}{14}}
 \newlabel{alg:dp}{{1}{14}}
-\newlabel{par:otherattempts}{{4.2}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{Alternative Storage Schemes}{14}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Row-major indexing}}{14}}
-\newlabel{fig:rowmajor}{{10}{14}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Wave-front indexing}}{14}}
-\newlabel{fig:wavefront}{{11}{14}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Offsets in wave-front indexing}}{15}}
-\newlabel{fig:offset}{{12}{15}}
-\newlabel{sec:vector}{{4.2}{15}}
-\@writefile{toc}{\contentsline {subsubsection}{Vectorization Attempts}{15}}
-\@writefile{toc}{\contentsline {subsubsection}{Log-space implementation}{15}}
-\@writefile{toc}{\contentsline {subsubsection}{Version using Array of Structs data structure}{16}}
-\@writefile{toc}{\contentsline {subsubsection}{Thoughts on wave-front vectorization}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Array-of-Structs data structure used to store the three matrices in memory. Each \texttt  {MatrixEntry} elemnt stores the entries of a single coordinate for all three matrices. The structs are stored contiguously, as the figure depicts, in row-major order.}}{15}}
+\newlabel{fig:aos}{{9}{15}}
+\newlabel{par:otherattempts}{{4.2}{15}}
+\@writefile{toc}{\contentsline {subsubsection}{Alternative Storage Schemes}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Row-major indexing}}{15}}
+\newlabel{fig:rowmajor}{{10}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Wave-front indexing}}{15}}
+\newlabel{fig:wavefront}{{11}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Vectorization Attempts}{15}}
+\newlabel{sec:vector}{{4.3}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Offsets in wave-front indexing}}{16}}
+\newlabel{fig:offset}{{12}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{Log-space implementation}{16}}
+\@writefile{toc}{\contentsline {subsubsection}{Version using Array of Structs data structure}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{Thoughts on wave-front vectorization}{17}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation and Testing}{18}}
+\newlabel{sec:evaluation}{{5}{18}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Benchmarks and Test Suites}{18}}
+\newlabel{ssec:benchmark}{{5.1}{18}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Results of Team I}{18}}
 \citation{Daramy04}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation and Testing}{17}}
-\newlabel{sec:evaluation}{{5}{17}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Benchmarks and Test Suites}{17}}
-\newlabel{ssec:benchmark}{{5.1}{17}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Results of Team I}{17}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Results of Team II}{17}}
-\newlabel{tbl:benchmark}{{5.2}{18}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Benchmark results for SoA, AoS and AoSoA (from left to right)}}{18}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Different Logarithm Libraries}{18}}
-\newlabel{sec:crlibm}{{5.4}{18}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Average edit distances from the alignment returned by using \texttt  {Boost.Multiprecision} of different logarithm implementations.}}{18}}
-\newlabel{fig:dist}{{2}{18}}
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Difference in alignments using the input parameters $\pi =(0.25,0.25,0.25,0.25), \lambda =1, \mu = 2, \tau = 0.1$}}{19}}
-\newlabel{fig:alignments}{{13}{19}}
+\newlabel{tbl:benchmark}{{5.2}{19}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Benchmark results for SoA, AoS and AoSoA (from left to right)}}{19}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Results of Team II}{19}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Different Logarithm Libraries}{19}}
+\newlabel{sec:crlibm}{{5.4}{19}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Runtime Measurements}{19}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Number of runs per sequence length}}{19}}
-\newlabel{fig:runs}{{3}{19}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Teaching Results}{19}}
-\newlabel{teaching-results}{{6}{19}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}What did Team I learn?}{19}}
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Comparison of average run times of the different implementations. \texttt  {sse3} and \texttt  {avx} post-fixes denote the vectorized versions of the programs, using SSE3 and AVX vector intrinsics respectively (Section\nobreakspace  {}4.2\hbox {}). \texttt  {log} denotes, that a version built on the log-space transformed version of TKF91 (Section\nobreakspace  {}4.1\hbox {}). Versions using the Array-of-Structs method of storing matrices (Section\nobreakspace  {}4.2\hbox {}) are denoted by the \texttt  {caching}-keyword, and the \texttt  {round\_up}-keyword denotes the use of the \texttt  {crlibm} library logarithm function \texttt  {log\_ru} (Section\nobreakspace  {}5.4\hbox {}).}}{20}}
-\newlabel{fig:runtime}{{14}{20}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Average edit distances from the alignment returned by using \texttt  {Boost.Multiprecision} of different logarithm implementations.}}{20}}
+\newlabel{fig:dist}{{2}{20}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Difference in alignments using the input parameters $\pi =(0.25,0.25,0.25,0.25), \lambda =1, \mu = 2, \tau = 0.1$}}{20}}
+\newlabel{fig:alignments}{{13}{20}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Number of runs per sequence length}}{20}}
+\newlabel{fig:runs}{{3}{20}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Teaching Results}{20}}
+\newlabel{teaching-results}{{6}{20}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}What did Team I learn?}{20}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Comparison of average run times of the different implementations. \texttt  {sse3} and \texttt  {avx} post-fixes denote the vectorized versions of the programs, using SSE3 and AVX vector intrinsics respectively (Section\nobreakspace  {}4.3\hbox {}). \texttt  {log} denotes, that a version built on the log-space transformed version of TKF91 (Section\nobreakspace  {}4.1\hbox {}). Versions using the Array-of-Structs method of storing matrices (Section\nobreakspace  {}4.2\hbox {}) are denoted by the \texttt  {caching}-keyword, and the \texttt  {round\_up}-keyword denotes the use of the \texttt  {crlibm} library logarithm function \texttt  {log\_ru} (Section\nobreakspace  {}5.4\hbox {}).}}{21}}
+\newlabel{fig:runtime}{{14}{21}}
 \bibstyle{plain}
 \bibdata{mlalign}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}What did Team II learn?}{21}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}What did the Teacher learn?}{21}}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{21}}
-\newlabel{conclusion}{{7}{21}}
+\bibcite{TKF91}{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}What did Team II learn?}{22}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}What did the Teacher learn?}{22}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{22}}
+\newlabel{conclusion}{{7}{22}}
