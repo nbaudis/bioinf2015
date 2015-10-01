@@ -561,7 +561,7 @@ To further investigate this, we used the high precision mathematical library of 
 It offers datatypes that dynamically adapt their floating point precision to avoid numerical errors as well as under-/overflow. 
 Our initial idea was to use this library only for pre-computing the logarithms, and thereby reduce the induced runtime overhead. 
 However, transforming these arbitrary precision datatypes to standard double precision floating point values proved to be problematic, since 
-it introduced additional loss of precision {\bf comapred to what?}. Therefore,  we abandoned this path.
+it introduced additional loss of precision {\bf comapred to what? SL: Compared to \ldots actually nothing. We had the problem that by converting the numbers back to the double format, many places after the comma became totally different random numbers. We expected the numbers to just be truncated but this did not happen.}. Therefore, we abandoned this path.
 
 \subsection{Matrix Storage Schemes}
 \label{sec:caching}
