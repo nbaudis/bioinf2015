@@ -106,9 +106,8 @@ as basic operations for comparing two DNA sequences.
 A given evolutionary model assigns a weight to each of these three basic operations.  
 These are then used to design a dynamic programming algorithm that computes the maximum likelihood pair-wise alignment between two DNA sequences. 
 
-As substitution model, we assume the standard stochastic nucleotide substitution model {\bf TODO by whom actually?}. 
-{\bf TODO the other two? We used the F81 model by Felsenstein -- as required by the assignment sheet of the practical}
-The algorithm computes the optimal maximum likelihood sequence alignment using three matrices, one for each {\bf TODO}.
+As substitution model, we assume the standard F81 stochastic model of nucleotide substitution~\cite{felsenstein1981evolutionary}. 
+The algorithm computes the optimal maximum likelihood sequence alignment using three matrices, one for each evolutionary event (i.e., substitution, deletion, and insertion).
 The algorithm is given by the following dynamic programming recurrence: 
 \[
 \begin{aligned}
@@ -121,11 +120,11 @@ The algorithm is given by the following dynamic programming recurrence:
 Where $\lambda$ and $\mu$ denote the birth and death rate, $\pi_x, x \in \{A,C,G,T\}$ denotes the equilibrium frequency of the nucleotides, 
 $P_{x \rightarrow y}$ the transition probability from $x$ to $y$, and $\overline{p_n}(t)$ the probability that after time $t$ a mortal link has exactly $n$ descendants. 
 The values for $t$, $\lambda$, $\mu$, and $\pi$ are given as input. 
-The values for $\overline{p_n}$ can be pre-computed in constant time {\bf constant?}.
+The values for $\overline{p_n}$ can be pre-computed in constant time.
 
 {\bf TODO related work} 
 
-{\bf TODO acronyms: DP, DPM} 
+In the following we refer to the dynamic programming paradigm as DP, and to dynamic programming matrices as DPM.
 
 The remainder of this paper is organized as follows: In Section~\ref{teaching}, we describe the teaching setup and goals. 
 The teams then present their implementations in Sections~\ref{sec:implementation-1} and \ref{sec:implementation-2}, respectively. 
@@ -137,28 +136,29 @@ We conclude in Section~\ref{conclusion}.
 \label{teaching} 
 
 \subsection{Teaching Setup \& Goals} 
+\labvel{setup}
 
 Courses at the Master level in our computer science department are organized in so-called modules over two semesters.
 In the first semester of the Bioinformatics module, we teach a lecture called ``Introduction to Bioinformatics for Computer Scientists'', since KIT does not offer
-a stand-alone Bioinformatics degree. This lecture covers basic topics such as an introduction to molecular biology, pair-wise sequence alignment,
+a stand-alone Bioinformatics degree. This lecture covers basic topics such as an introduction to molecular biology, classic pair-wise sequence alignment,
 BLAST, de novo and by-reference sequence assembly, multiple sequence alignment, phylogenetic inference, MCMC methods, and population genetics.
 
 In the second semester of the module, students can choose if they want to do a seminar presentation or the programming practical whose results we describe here.
-The goal of the practical is to carry out a self-contained project and write, as well as release software, that is useful to the evolutionary biology community.
-Another focus is on learning to use tools that enhance software quality.
-Note that, at a CS department designing ``classic'' bioinformatics analysis pipelines using scripting languages is typically not considered as ``real programming'' by the
-students. Hence, we needed to define a project that requires coding in \texttt{C/C++} or \texttt{Java}.
+The goal of the practical is to carry out a self-contained project and write, as well as release software, that will be useful to the evolutionary biology community.
+Another key focus is on using tools (e.g., static analyzers, memory checkers) that increase software quality.
+Note that, at a CS department, designing ``classic'' bioinformatics analysis pipelines using scripting languages is typically not considered as ``real programming'' by the
+students. Hence, we needed to define a project that required coding in \texttt{C/C++} or \texttt{Java}.
 One should also strive to avoid having the students extend existing software, since
 this is generally frustrating and hinders creativity.
 
 We thus decided to ask the students to implement efficient, sequential versions of the TKF91 algorithm that can also be used as library routines. 
-Since the dynamic programming algorithm as such, is relatively straight-forward to implement for a computer science student, the main focus was on code optimization. 
+Since the DP algorithm as such, is relatively straight-forward to implement for a computer science student, the main focus was on code optimization. 
 The students were thus asked to implement a highly efficient version of the code in \verb|C| or \verb|C++| using all capabilities of a modern CPU (e.g., SSE3 and AVX intrinsics).
-The main motivation for this was to give the students enough time to experiment with low-level optimization strategies on modern CPUs. 
+The main motivation for this, was to give the students enough time to experiment with low-level optimization strategies on modern CPUs. 
 Moreover, this project allowed to apply a broad range of skills acquired in the Bioinformatics and other master-level modules at our department.
-Furthermore, the TKF91 model required understanding and applying the discrete pair-wise sequence alignment methods and likelihood-based models for evolutionary biology 
-presented in the lectures. 
-To foster competition among the teams, an award (dinner payed by the PI) was announced for the team that would implement the fastest code. 
+Furthermore, the TKF91 model required understanding and applying the discrete pair-wise sequence alignment methods and likelihood-based models for sequence evolution
+introduced in the lectures. 
+To foster competition among the teams, an award (dinner payed by Alexis) was announced for the team that would implement the fastest code. 
 To allow for a fair comparison of the codes and CPU-specific optimization we provided the students access to a reference machine with 4 physical cores (Intel i7-2600 running at 3.40GHz) and 
 16GB RAM. 
 
@@ -167,17 +167,17 @@ about the practical and upload it to \verb|biorxiv|. This has the positive effec
 
 \subsection{Code Quality Assessment}
 In order to continuously monitor and improve the quality of our source code, we used several tools and methods throughout our project.
-We deployed both, static, as well as dynamic code analyses.
+We deployed both, static, as well as dynamic code analysis tools.
 
 \subsubsection{Static Analysis}
-Static analyses help to identify static programming errors such as incorrect programming language syntax or static typing errors.
-We compiled our code with the \texttt{gcc} compiler using all available and reasonable warning flags\footnote{-Wall -Wextra -Wredundant-decls -Wswitch-default -Wimport -Wno-int-to-pointer-cast -Wbad-function-cast -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wstrict-prototypes -Wformat-nonliteral -Wundef}. 
+Static analyses help to identify static programming errors such as incorrect programming language syntax or typing errors.
+We compiled our codes with the \texttt{gcc} compiler using {\em all} available and reasonable warning flags\footnote{-Wall -Wextra -Wredundant-decls -Wswitch-default -Wimport -Wno-int-to-pointer-cast -Wbad-function-cast -Wmissing-declarations -Wmissing-prototypes -Wnested-externs -Wstrict-prototypes -Wformat-nonliteral -Wundef}. 
 This allowed us to identify potential programming errors at an early stage. 
 Due to its more pedantic nature (i.e., ability to detect more errors), we also used the \texttt{clang} compiler with respective flags\footnote{-Weverything -pedantic} 
-periodically alongside of \texttt{gcc} to further reduce the amount of potential errors.
+periodically alongside of \texttt{gcc} to further reduce the amount of potential programming errors. Note that, \verb|clang| conducts a static code analysis.
 
 \subsubsection{Dynamic Analysis}
-These analyses cover run-time issues such as memory leaks.
+These analyses cover run-time issues, mainly memory leaks.
 We used \texttt{valgrind} and its sub-module \texttt{memcheck} for detecting memory-related errors in our programs. 
 
 
@@ -187,20 +187,20 @@ We used \texttt{valgrind} and its sub-module \texttt{memcheck} for detecting mem
 Before describing our vectorized implementation, we cover the necessary prerequisites.
 In Section~\ref{ssec:dynprogramming} we describe the DP algorithm in more detail as well as the corresponding wave-front parallelism we exploited in our implementation. 
 In Section~\ref{ssec:memorylayout}, we describe our memory layout concept, which is required to improve the efficiency of the vectorization. 
-Thereafter, in Section~\ref{ssec:memo}, we describe how we cache intermediate computations, and then explain our vectorization approach in Section~\ref{ssec:vectorization}. 
-In addition to that, Section~\ref{ssec:dataalignment} outlines our considerations regarding the alignment of the data, marking an important part of the vectorized implementation. 
+Thereafter, in Section~\ref{ssec:memo}, we describe how we cache intermediate computations. Then, we explain our vectorization approach in Section~\ref{ssec:vectorization}. 
+Section~\ref{ssec:dataalignment} outlines our considerations regarding the data alignment that constitutes an important part of the vectorized implementation. 
 
 
 
 \subsection{Dynamic Programming and Wave-front Parallelism}
 \label{ssec:dynprogramming}
 
-\textit{Dynamic Programming (DP)} is a widely-used technique to efficiently solve a class of, at first sight, apparently hard computational problems when they exhibit
+DP is a widely-used technique to efficiently solve a class of, at first sight, apparently hard computational problems when they exhibit
 \textit{overlapping subproblems} and \textit{optimal substructure}. 
 Pair-wise sequence alignment falls into this class. 
 Another advantage of DP is that it is comparatively straight-forward to parallelize computations along the anti-diagonals 
-of the DP matrix. 
-This DP matrix parallelization approach is also known as wave-front parallelism. 
+of the DPM. 
+This DPM parallelization approach is known as wave-front parallelism. 
 The underlying idea is that matrix entries along the same DP anti-diagonal $d$ can be computed independently from each other  (and hence in parallel) 
 if the preceding anti-diagonal $d-1$ has been computed. 
 Therefore, we can deploy vector intrinsics to accelerate calculations along anti-diagonals.
@@ -209,25 +209,25 @@ Therefore, we can deploy vector intrinsics to accelerate calculations along anti
 \subsection{Memory Layout}
 \label{ssec:memorylayout}
 
-We first introduce our memory layout for the three DP matrices ($M^0, M^1, M^2$) since this is performance-critical.
-Our vectorization approach needs to attain high data locality to take advantage of the CPU cache.
-To this end,  we permuted the indexing scheme of the DP matrix such that matrix neighboring entries on a anti-diagonal are also contiguous in memory. 
-Figure~\ref{fig:indexing} shows the memory mapping of the matrix. 
-It is layed out neither in a column-major nor row-major fashion in memory, but stored linearly by anti-diagonals. 
+We first introduce our memory layout for the three DP matrices ($M^0, M^1, M^2$) since it is performance-critical.
+Our vectorization needs to attain high data locality to efficiently use the CPU cache.
+To this end,  we permuted the indexing scheme of the DP matrix such that neighboring entries on an anti-diagonal are stored contiguously in memory. 
+Figure~\ref{fig:indexing} depicts the memory mapping of the matrix. 
+It is layed out neither in a column-major nor row-major fashion, but stored linearly by anti-diagonals. 
 
 \begin{figure}[ht!]
   \centering
   \includegraphics[scale=0.9]{figures/indexing.pdf}
-  \caption{Memory layout for the DP matrix}
+  \caption{DPM memory layout}
   \label{fig:indexing}
 \end{figure}
 
 We index the matrices using a modified version of the \textit{Cantor pairing function}, where a tuple is assigned to an offset. 
 The original Cantor pairing function $\pi$ assigns an integer to a pair of integers (e.g., $\pi: (\mathbb{N}, \mathbb{N}) \rightarrow \mathbb{N}$). 
-Since the size of the DPM is defined by the length of the input sequences and because it is not infinite, 
+Since the size of the DPM is given by the length of the input sequences and because it is not infinite, 
 we modified the pairing function to accept a tuple of two integers from the interval $[0..\textrm{length}(\textrm{Sequence 1\textbar2})]$ as input. 
-As a consequence, the DPM is divided into three parts: the \emph{opening}, \emph{middle}, and \emph{closing part}. 
-In the opening part, the modified pairing function is identical to the original function; in the middle and closing parts, 
+As a consequence, the DPM is divided into three parts: the \emph{opening}, \emph{intermediate}, and \emph{closing part}. 
+In the opening part, the modified pairing function is identical to the original function; in the intermediate and closing parts, 
 the modified pairing function is calculated by subtracting an offset from the original pairing function. 
 We calculate the offset via the original Cantor pairing function.
 
@@ -239,27 +239,23 @@ We calculate the offset via the original Cantor pairing function.
 \end{figure}
 
 In Figure~\ref{fig:pairingfunc}, we show the index calculations for the anti-diagonals of a $5\times3$-matrix. 
-The blue box denotes the boundaries {\bf ?} of the DP matrix, the blue cells represent the opening part, 
-the green cells inside the matrix the middle, and the red cells inside the matrix the closing part. 
-Green and red cells outside of the matrix boundaries represent the offset calculation for the middle and closing part, respectively. 
-For the DP calculations {\bf for what?}, only the indices that correspond to
-entries in the DP matrix  {\bf of those {\bf all?} pairing functions} are
-needed. 
+The blue frame denotes the actual boundaries of this $5\times3$ DP matrix, the blue cells represent the opening part, 
+the green cells inside the frame the intermediate part, and the red cells inside the frame the closing part. 
+Green and red cells outside of the matrix boundaries represent the offset calculation for the intermediate and closing part, respectively. 
+For the DP calculations, only indices that correspond to
+DPM entries are required. 
 
-Given the anti-diagonal indexing scheme for a single matrix, we need to 
-devise the memory layout for the three DP matrices ($M_0,M_1,M_2$) next.  
+Given the anti-diagonal indexing scheme for a single matrix, we now need to 
+devise the memory layout for the three DP matrices ($M_0,M_1,M_2$).  
 This is because calculating a DP value requires 
 accessing values from all three matrices, which are located at different
 positions in memory.  
-{\bf I am not sure I understand the following question, please re-formulate} 
-{\bf -- Simplified the sentences, the Therefore-sentence wasn't really required i
-think. }
 %Therefore, the access pattern inside the matrices follows the same anti-diagonals.  
-To improve data locality while, at the same time, using efficient {\bf vector?}
+To improve data locality while, at the same time, using efficient
 vector load and store operations, 
-the matrix data has to be arranged accordingly.  Since we are using
+the data has to be arranged accordingly.  Since we are using
 double-precision floating-point numbers for all calculations, an SSE3 vector
-($128$ bit) holds 2 values, while an AVX vector ($256$ bit) holds 4 values.
+($128$ bit) can hold 2 values, while an AVX vector ($256$ bit) can hold 4 values.
 To this end, we evaluated the following three alternative matrix layouts (see Figure~\ref{fig:datalayout}):
 
 \begin{figure}[ht!]
@@ -270,8 +266,8 @@ To this end, we evaluated the following three alternative matrix layouts (see Fi
 \end{figure}
 
 \paragraph*{Struct of Arrays (SoA)} ({\small\texttt{struct \{ double m0[n], m1[n], m2[n]; \} data;}}) 
-This layout allows for simple {\bf vector?} vector load and store patterns. 
-However, the three matrices are located in separate memory regions, which decreases
+This layout allows for simple vector load and store operations. 
+However, the three DPMs are located in separate memory regions, which decreases
 cache efficiency and data locality.
 
 \paragraph*{Array of Structs (AoS)} ({\small\texttt{struct \{ double m0, m1, m2; \}
@@ -290,34 +286,28 @@ them, which requires several, potentially costly, vector shuffle operations.
 Figure~\ref{fig:shufflesse} illustrates these shuffle operations. 
 For $m_x^y$, the subscript $x$ indicates
 the index of the matrix and the superscript $y$ the SSE3/AVX vector element
-index $y$ {\bf state that we use double precision!}{\bf Added a sentence about
-double-precision and vector size above}.  The first row of the Figure depicts the {\em AoS} data layout. 
-Here, we perform a {\bf if you say aligned you need to be more
-specific}{\bf -- Removed the "aligned", I think it's not important while discussing
-the shuffle operations} vector \texttt{load} operation
+index $y$.  The first row of the Figure depicts the {\em AoS} data layout. 
+Initially, we perform a vector \texttt{load} operation
 to load the data into temporary vector registers. 
-Thereafter, we shuffle the temporary vectors such that (i) each vector only contains elements from one of the tree DP matrices and 
-(ii) the individual elements are in the correct order with respect to  the {\bf
-anti-?} anti-diagonal. 
+Thereafter, we shuffle the temporary vectors such that (i) each vector only contains elements from one of the three DP matrices and 
+(ii) the individual elements are in the correct order with respect to  the anti-diagonal. 
 For both SSE3 as well as AVX instructions, we need to perform three \texttt{load} operations and three \texttt{shuffle}/\texttt{permute} operations. 
-For AVX, three additional \texttt{blend} operations are required to put the data elements into the correct order. 
+For AVX, three additional \texttt{blend} operations are required to correctly order the data elements. 
 
 \paragraph*{Array of Structs of Arrays (AoSoA)} ({\small\texttt{struct \{ double m0[v],
-m1[v], m2[v]; \} data[m];}}) This layout groups vectors in advance, i.e.,
-adjacent elements of each matrix are already in an SSE3/AVX vector.  While solving both of the previous
-problems {\bf state those problems again!} (low data locality and costly vector operations),
-grouping vectors {\bf what do you mean by grouping vectors?}{\bf -- Added an
-explanation at the beginnning} in advance complicates DP cell access above the current anti-diagonal.
-These values do {\bf would or do not lie?} not lie within vector boundaries and would {\bf would or do require?} then
-again {\bf either?} require either \texttt{shuffle}/\texttt{permute} operations
-or partial loads {\bf explain what you mean by partial loads!} (i.e., accessing single elements of several vectors).
+m1[v], m2[v]; \} data[m];}}) This layout stores vectors such that
+adjacent elements for each of the three matrices can be directly loaded into a SSE3/AVX vector. 
+While solving both aforementioned problems (low data locality and costly vector operations),
+this complicates DP cell accesses above the current anti-diagonal.
+The required values above the current anti-diagonal are not stored contiguously 
+and therefore we either need to use \texttt{shuffle}/\texttt{permute} operations
+or partial loads (i.e., load single elements into vectors).
 
-\paragraph*{} All three layouts have different performance characteristics with respect to
-cache efficiency {\bf Note to team I: we usually say cache efficiency and data locality, but not cache locality!} 
-and complexity of the load, store, and shuffle operations.
+\paragraph*{} All three layouts exhibit different performance characteristics with respect to
+cache efficiency and complexity of the load, store, as well as shuffle operations.
 We implemented prototypes for all three approaches to analyze their
 performance and found that the AoS approach performs best.  
-Note that, the complexity of the \texttt{shuffle} operations outweighed the improved cache efficiency in the AoS and
+Note that, the computational cost of the \texttt{shuffle} operations outweighed the improved cache efficiency in the AoS and
 AoSoA layouts (also see Table~\ref{tbl:benchmark} in Section~\ref{}). 
 
 
@@ -325,27 +315,26 @@ AoSoA layouts (also see Table~\ref{tbl:benchmark} in Section~\ref{}).
 \label{ssec:memo}
 
 The \cite{TKF91} model has several parameters. Thus, it initially seemed inevitable to carry out the non-trivial computations for filling DP cells 
-for each cell from scratch.
-However, after analyzing which expressions are constant and can thus be pre-computed and reused (i.e., memoized {\bf Note: this could also be called caching or using a lookup table}), 
+from scratch for each individual cell.
+However, after analyzing which expressions are constant and can thus be pre-computed and reused (i.e., memoized), 
 we reduced the operations required for calculating a DP cell value to just three: indirection, summation, maximum.
 
 Obvious savings can be achieved for expressions that only depend on the time parameter $t$, 
 the birth rate $\lambda$, and the death rate $\mu$.
 These values are constant and given as input parameters. 
 We also observed that the cell updates in the DP algorithm only require a constant number of common sub-calculations/components: 
-When the nucleotide values at the current indices in the two sequences are available, 
+When the nucleotide states at the current indices for the two sequences are available, 
 the score (cell value) can be computed using only the current nucleotide pair and the 
-neighboring values {\bf of which matrices} of the three DP matrices.
+neighboring values in the three DP matrices.
 
-The memoization scheme (lookup table) for all possible transition penalties is shown in Figure~\ref{fig:memo}. 
-The penalties $C^i$ take one or two nucleotides as parameters.
-Thus they can be stored in a memoization table of $4$ and $16$ entries, respectively. 
-With a total of only $24$ memoized values, we substantially simplified and accelerated (by {\bf TODO how many orders of magnitude?} {\bf Actually, I can't tell, because we hadn't had our benchmark suite in place back then. I could cherry pick some commits and throw together a benchmark run if that's really wanted, but I'd rather get rid of that claim.}) the cell updates.
+The memoization scheme (lookup table) for all possible configurations is shown in Figure~\ref{fig:memo}. 
+The penalties functions $C^i$ that can be stored in lookup tables take one or two nucleotide states as parameters.
+Thus, the penalties can be stored in a memoization table of $4$ and $16$ entries, respectively. 
+Using only $24$ memoized values, we were able to substantially simplify and accelerate the cell updates.
 In addition, this simplification now allows to apply the logarithm for preventing numerical underflow.
-This was not possible before, since taking the logarithm of the original equation would have been too expensive. 
-It also kept the translation to SIMD-enabled code manageable {\bf what do you mean by manageable?} {\bf The complexity involved with having to translate the recurrence steps verbatim to SIMD instructions and optimizing them with confidence. I imagined that would be much more involved and harder to parallelize efficiently}.
-Furthermore, the simplification reduces the number of design decisions that are required regarding 
-memory layout and vectorization.
+This was not possible before, since taking the logarithm of the original equation would have been too expensive computationally. 
+In addition, vectorizing the cell updates is simpler, since the remaining calculations are less complex. 
+Finally, this simplification reduces the number of possible memory layout and vectorization options.
 
 \begin{figure}
 \[
@@ -358,25 +347,27 @@ memory layout and vectorization.
   M^2(i,j)&=C^2(b_j)max\{M^1(i,j-1), M^2(i,j-1)\}
 \end{aligned}
 \]
-\caption{A re-formulation of the DP step using the memoized sub-problems $C^i$ {\bf you should have explained what the C is much earlier!} {\bf I think we referenced it much earlier, so I moved this nearer to its 'declaration site'.} }
+\caption{A re-formulation of the DP step using the memoized sub-problems (lookup tables) $C^i$.}
 \label{fig:memo}
 \end{figure}
 
 At a later point of the project, it became evident that the indexed loads from the memoized penalty matrices $C^0$, $C^1$, $C^2$ as defined in Figure~\ref{fig:memo} caused a performance degradation. 
-To solve this problem, we tried to pre-compute a larger lookup table of vector-sized elements, that we indexed by a specific nucleotide permutation. 
+To address this problem, we tried to pre-compute a larger lookup table of vector-sized elements, that we indexed by a specific nucleotide permutation. 
 Consider the following example for AVX vector intrinsics.
 We need to calculate a bijective mapping for a set of four nucleotides to an integer representing one of the $4^4 = 256$ possible permutations (e.g. a perfect hash) 
-for $C^0$ and $C^2$, and $4^{2 \cdot 4} = 65536$ for $C^1$ respectively {\bf where do those C variables come fraom, have they been properly introduced? I don't think so!} {\bf Those are the cached values that were on the next page. Moved them up and added an introductory phrase at the begin of the paragrapgh.}. 
-The mapping is implemented as a base conversion from the set of 4 nucleotides to an unsigned integer via appropriate bit-wise operations.
+for $C^0$ and $C^2$, and one of the possible $4^{2 \cdot 4} = 65536$ permutations for $C^1$ respectively. 
+The mapping is implemented as base conversion from the set of 4 nucleotides to an unsigned integer via appropriate bit operations.
 
 While this approach has exponential space requirements as a function of the vector width, using a lookup table of $65536 \cdot 32$ bytes $= 2$ MB for $C^1$ for 
 the AVX version of our code was still feasible. 
-However, the evaluation of the resulting performance revealed that too much time is spent to fill the table, at least for our benchmark datasets. 
-Since the values in the table only depend on the likelihood model parameters, that is, it is independent of the input sequences at hand, 
-this approach can be re-considered in cases were this lookup table shall be re-used for multiple DP invocations. 
-This might be useful when calculating pair-wise alignments of $n$ sequences under the same model parameters 
-{\bf not sure if we should write this here, at leats as long as the parameter t is also required to calculate the values in that table, need to double-check}{\bf That's a good point. I was mentally pulling t into the model, which is incorrect, unless t stays constant. }
-{\bf I don't understand the following sentence, please re-forumulate it} {\bf Tried to clarify with the part following e.g. } The scaling to wider vector registers could be retained by loading a register in packs of four values, e.g. for an 8 element vector, loading the lower and upper 4 values separately from the lookup table for 4 element vectors allows the space complexity to stay constant with respect to vector width.
+However, the evaluation of the resulting performance revealed that too much time is spent to populate the table. Thus, we abandoned this approach.
+
+% AS: habe den rest mal auskommentiert hier den brauchen wir nicht wirklich 
+%Since the values in the table only depend on the likelihood model parameters, that is, it is independent of the input sequences at hand, 
+%this approach can be re-considered in cases were this lookup table shall be re-used for multiple DP invocations. 
+%This might be useful when calculating pair-wise alignments of $n$ sequences under the same model parameters and  
+%{\bf not sure if we should write this here, at leats as long as the parameter t is also required to calculate the values in that table, need to double-check}{\bf That's a good point. I was mentally pul%ling t into the model, which is incorrect, unless t stays constant. }
+%{\bf I don't understand the following sentence, please re-forumulate it} {\bf Tried to clarify with the part following e.g. } The scaling to wider vector registers could be retained by loading a regist%er in packs of four values, e.g. for an 8 element vector, loading the lower and upper 4 values separately from the lookup table for 4 element vectors allows the space complexity to stay constant with r%espect to vector width.
 
 
 \subsection{Vectorization}
@@ -385,30 +376,19 @@ This might be useful when calculating pair-wise alignments of $n$ sequences unde
 We implemented a vectorized version for computing 
 $M_0$, $M_1$, and $M_2$ using \texttt{add}, \texttt{max}, \texttt{load}, and \texttt{store}
 operations for both SSE3 and AVX instructions.  
-Using these operations, we can process $n$ matrix elements in parallel.  
+With these operations, we can process $n$ matrix elements in parallel.  
 Depending on the location of the vector on the anti-diagonal that is being processed, there will be $0 < n \leq V$ valid elements to operate on 
-per vector (with vector size $V = 4$ for AVX and $V = 2$ for SSE3 {\bf TODO: we
-need to state in the beginning that we used double precision}{\bf Added a sentence about
-double-precision and vector size above}). 
+per vector (with vector size $V := 4$ for AVX and $V := 2$ for SSE3). 
 
-Usually, data that has to be loaded into vectors is aligned, i.e., the starting
-address of the data is within certain byte boundaries. This alignment allows to
+Usually, data that has to be loaded into vectors needs to be aligned, that is, the starting
+address of the vector data needs to be a multiple of 16 or 32 bytes. This memory alignment allows to
 use the aligned versions of the vector \texttt{load} and \texttt{store} operations,
-which are faster than the unaligned versions.
-Although we ensured aligned {\bf need to be more specific what you mean by
-aligned, it's not clear to a general readership}{\bf Added a sentence about
-alignment} 
-access to a majority of the data (as will be explained in
-Section~\ref{ssec:dataalignment}), we used the unaligned vector \texttt{load} and \texttt{store}
-operations \texttt{loadu\_pd} and \texttt{storeu\_pd} for the SSE3 and AVX versions. 
-{\bf I don't get the following sentence, whyt was unaligned load necessary if
-you were able to test on aligned data???}{\bf -- We aligned the data so that the
-  majority of the vectors start at an aligned address. If, for example,
-  M2(i-1,j) (the same position shifted by -1 vertically) needs to be loaded into
-a vector, we can only do that using an unaligned load.}
-  This does not represent a disadvantage for the
-performance, since we could not identify significant performance impacts of
-using unaligned intrinsics on aligned data.
+which are faster than the respective unaligned operations.
+Although we ensured memory-aligned accesses to the majority of the data (as will be explained in
+Section~\ref{ssec:dataalignment}), we consistently used unaligned vector \texttt{load} and \texttt{store}
+operations (\texttt{loadu\_pd} and \texttt{storeu\_pd}) in the SSE3 and AVX versions of our code. 
+This does not degrade performance, since we did not observe a significant performance degradation when
+applying unaligned load intrinsics on aligned data.
 
 To prevent our \texttt{store} operations from overwriting data at the boundaries
 of the matrices, we ensured that for vectors with size $n < V$ (i.e.,
@@ -416,21 +396,24 @@ not completely filled/padded vectors) only $n$ elements are written back into th
 matrices.  For the SSE3 version, this can be achieved by only writing the lower
 part of the vector if its size is $1$.  For AVX, however, we covered all cases
 where $n < V$ holds using the \texttt{maskstore\_pd} intrinsic and an appropriate mask
-for all possibles value of $n$ (i.e., $3$, $2$, and $1$).
+for all possibles values of $n$ (i.e., $3$, $2$, and $1$).
 
 \subsection{Data Alignment}
 \label{ssec:dataalignment}
 
-When vectorizing along the anti-diagonals, accessing the memory in the dynamic programming matrices when they are stored in a row-, or column-major scheme 
+When vectorizing along the anti-diagonals, accessing the memory in the DPMs when they are stored in a row-, or column-major scheme 
 prevents deploying efficient vector operations for loading the values from the matrices into vector registers. 
 For such a matrix layout, the performance of the inner DP loop becomes heavily memory-bound. 
-Therefore, we used the aforementioned diagonalized matrix layout together with an struct of arrays approach (see section~\ref{ssec:memorylayout}) {\bf TODO: add cross-ref} {\bf done}, such that \texttt{load} and \texttt{store} operations for copying data directly from the anti-diagonal 
+Therefore, we used the aforementioned anti-diagonalized matrix layout together with a struct of arrays approach (see section~\ref{ssec:memorylayout}), 
+such that unaligned \texttt{load} and \texttt{store} operations for copying data directly from the anti-diagonal 
 into vector registers can be utilized. 
-Those \texttt{load} and \texttt{store} operations come in two flavors: There exist \texttt{load} and \texttt{store} operations for aligned and unaligned data. 
-Using the unaligned versions can decrease memory access performance. However, 
-as mentioned in Section~\ref{ssec:vectorization}, loading aligned data using \texttt{loadu\_pd} does not incur a performance penalty. 
-On the other hand, using aligned loads yields storing the DP matrices more complex. 
-When loading data from the matrices into SSE3/AVX vector registers, the data has to be aligned to $16/32$ byte boundaries.
+
+% AS: habe den paragraphen hier unten mal auskommentiert, der ist zu redundant mit der scetion drüber 
+%Those \texttt{load} and \texttt{store} operations come in two flavors: There exist \texttt{load} and \texttt{store} operations for aligned and unaligned data. 
+%Using the unaligned versions can decrease memory access performance. However, 
+%as mentioned in Section~\ref{ssec:vectorization}, loading aligned data using \texttt{loadu\_pd} does not incur a performance penalty. 
+%On the other hand, using aligned loads yields storing the DP matrices more complex. 
+%When loading data from the matrices into SSE3/AVX vector registers, the data has to be aligned to $16/32$ byte boundaries.
 
 \begin{figure}[ht!]
   \centering
@@ -439,14 +422,21 @@ When loading data from the matrices into SSE3/AVX vector registers, the data has
   \label{fig:unaligned}
 \end{figure}
 
-Figure~\ref{fig:unaligned} shows how the byte offset for the anti-diagonals is shifted from one diagonal to the next {\bf to achieve a proper 16/32 byte alignment I assume?} {\bf Not quite, it's how alignment to 16/32 byte boundaries is not guaranteed when just tightly packing anti-diagonal after anti-diagonal linearly into the buffer. We modified the indexing function so that it inserts the appropriate padding cells, such that the beginning (well, actually each 2nd cell, the first was initialized sequentially before the tight loop and thus can be unaligned) of an anti-diagonal is always aligned. Check out the comment here: https://goo.gl/r8H6qF. It's pretty technical, but I hope this clears things up. Note how the entire first row is unaligned and how the second row is always aligned to multiples of 4.}
-To easily determine the aligned addresses for loading vectors we modified the indexing function for diagonalized access (see also section~\ref{ssec:memorylayout}){\bf TODO cross ref!} {\bf done} for the anti-diagonals. 
-The main idea is to store each anti-diagonal starting at a 16/32 byte-aligned address. {\bf is the following edit I mad actually correct?} {\bf It's not that all load and stores are aligned (that's not possible), but that we choose a layout where the most possible loads/stores are aligned. } Thereby, all load and store operations are guaranteed to happen on a predictable alignment, which we choose so that most of the operations happened on a proper alignment boundary.
+Figure~\ref{fig:unaligned} shows why a 16/32 byte alignment for the starting addresses of the anti-diagonals can not be achieved when just 
+storing anti-diagonals linearly. To solve this problem, we used padding, that is, we allocate some dummy entries such that 
+each anti-diagonal starts at a 16/32 byte-aligned address.
+As a consequence we also had to modify the indexing function from Section~\ref{ssec:memorylayout} accordingly. 
+The main idea is to store each anti-diagonal starting at a 16/32 byte-aligned address.  
+
+%AS habe das unten mal auskommentiert 
+%Thereby, all load and store operations are guaranteed to happen on a predictable alignment, which we choose so that most of the operations happened on a proper alignment boundary.
 %When iterating over anti-diagonal elements in a vectorized fashion, the vectors are then automatically constructed from data that is aligned to the required address offset.
 
-{\bf The following three sentences need to be re-written, they are rather confusing}  
-{\bf I rewrote them. Is it clearer now?}
-We strived for a scheme where the row with index 1 (zero-based) is aligned, because the row with index 0 is initialized prior to the DP loop. This resulted in each anti-diagonal to to be aligned on a rather strange alignment ($a - 8$ where $a$ is the alignment boundary in bytes, so 24 bytes for the 32 byte example). 
+%{\bf The following three sentences need to be re-written, they are rather confusing}  
+%{\bf I rewrote them. Is it clearer now?}
+
+We implemented a scheme where the row with index $1$ is memory-aligned, because the row with index $0$ is initialized {\em prior} to entering the DP loop. 
+As a consequence, each anti-diagonal is aligned to an ``odd'' address ($a - 8$, where $a$ is the desired byte alignment, for instance, $32 - 8 = 24$ bytes for AVX intrinsics). 
 
 %The starting address for the anti-diagonal is not the required alignment address for loading and storing the vectors, but a larger address minus the size of one double floating point value. 
 %This is due to the fact that the row with index 0 of the matrix is pre-computed during the matrix initialization and therefore a value is never written to this row. Another reason for this decision is that it is impossible to load all vectors needed for the computation inside the tight loop of the algorithm from an aligned addresses.
@@ -454,15 +444,15 @@ We strived for a scheme where the row with index 1 (zero-based) is aligned, beca
 \begin{figure}[ht!]
   \centering
   \includegraphics[scale=1.1]{figures/alignment.pdf}
-  \caption{Outline of the data required for an operation in the DP loop}
+  \caption{Outline of the data required for calculating an anti-diagonal}
   \label{fig:alignment}
 \end{figure}
 
-In Figure~\ref{fig:alignment}, we show the required values for computing the inner DP loop for AVX (vector length: $4$ double precision values). 
-The elements marked in red are the ones we want to compute in the current step. 
+In Figure~\ref{fig:alignment}, we show the required values for computing the anti-diagonal elements  with AVX intrinsics (vector length: $4$ double precision values). 
+We want to calculate the red elements in the current step. 
 For calculating a single element, we require three elements from the two previous anti-diagonals. 
-The element directly above (yellow) and left (blue) to the current element and the diagonal element above and to the left  (green) need to be loaded from the DP matrices. 
-The Figure illustrates that (neglecting the asymptotically irrelevant boundary cases) one of the following four conditions holds:
+We need to access the element directly above (yellow) and left (blue) to the current element as well as the diagonal element above and to the left  (green). 
+The Figure illustrates that ---omitting the asymptotically irrelevant boundary cases--- one of the following four conditions holds:
 \begin{enumerate}
   \item red and blue start on an aligned address, yellow and green do not
   \item red and yellow start on an aligned address, blue and green do not
@@ -471,11 +461,11 @@ The Figure illustrates that (neglecting the asymptotically irrelevant boundary c
 \end{enumerate}
 
 For the computation, we need to perform three \texttt{load} operations in total for the blue, yellow, and green elements and one \texttt{store} operation for the red elements. 
-Since the {\em unaligned} \texttt{store} operation has greater relative performance impact than the unaligned load operations {\bf why?}{\bf Good question :) purely speculative, I guess. Although stores seem to take longer than loads. } , 
-we ensured that either the first or the second of the above conditions is met. 
-The first condition is implemented for the opening and middle part, the second condition holds true for the closing part of the DP matrices.
+Since, based on empirical observations, {\em unaligned} \texttt{store} operations require more time than unaligned load operations, 
+we ensured that either condition $1$ or $2$ above is always met. 
+Thus, we implemented our code such that, the first condition is met for the opening and intermediate part and the second condition holds true for the closing part of the DP matrices.
 
-We achieved an appropriate alignment for each anti-diagonal by padding anti-diagonals as needed. 
+We achieved an appropriate memory-alignment for each anti-diagonal by padding them as needed. 
 
 % I think we don't need the stuff below. 
 %We realized this padding by modifying the indexing function into the matrices. In the final version of this indexing function for an anti-diagonal, a certain amount of array elements in the matrix buffer is skipped. Elements are skipped until the second element of the anti-diagonal is aligned with the vector intrinsics requirements. This way, some memory is wasted because it is not used, however it is asymptotically insignificant compared to the overall space complexity of the algorithm ($O(\textrm{length}(\textrm{Sequence 1}) \cdot \textrm{length}(\textrm{Sequence 2}))$).
@@ -489,7 +479,7 @@ While we experimented with different vectorization techniques, it turned out tha
 We thus conclude that, we managed to simplify the sequential code to such an extent, that, the potential advantages of using SIMD instructions 
 are amortized by the additional overhead ({\bf TODO add cross-ref to the section where you discuss this}) we need for vectorization.
 
-\subsection{Mathematical Optimization}
+\subsection{Mathematical Optimization - Basic Version}
 
 \subsubsection{Numerical Underflow Prevention}
 \label{sec:log}
@@ -497,9 +487,9 @@ are amortized by the additional overhead ({\bf TODO add cross-ref to the section
 As the TKF91 algorithm performs successive multiplications on floating point numbers, preventing numerical underflow
 {\em is} a major issue. Underflow can occur, even for short input sequences with less than $100$ nucleotides each.
 To address this issue we transformed all computations into log-space, to add logarithms of probabilities instead of multiplying probabilities.
-While it is still possible to experience under- or overflow {\bf why overflow, please explain! Pierre: I think we meant when transforming a problem into logspace in general, but reading on the text is very specific, so I would remove the ``overflow''} even after this transformation, 
-this is highly unlikely to occur for practical (empirical) input data.
-We did not observe any numerical issues for the range of input parameters values and sequence lengths (up to and including $10000$ nucleotides) 
+While it is still possible to experience numerical problems, even after this transformation, 
+we expect that this is highly unlikely to occur for practical (empirical) input data.
+We did not observe any numerical issues for the range of input parameters values and sequence lengths (up to and including $10,000$ nucleotides) 
 we tested.
 
 \subsubsection{Simplifying the Formulas}  
@@ -508,11 +498,10 @@ For example, we observed that $$M^0(i+1,0) = M^0(i,0) + \log(\gamma_{i+1}) + \lo
 After replacing $\beta(t), \bar{p_0}(t), \gamma_i$ and $\zeta_i$ by their respective formulas, we observed that some terms appear multiple times. 
 Operating in log-space allowed us to further simplify the formulas. Especially the logarithmic rules $\log(a*b) = \log(a) + \log(b)$ and $\log(a/b) = \log(a) - \log(b)$ 
 allowed us to replace multiplications and divisions with additions and subtractions.
-{\bf please include them here! Okay, here they are:}
 
-In the following formulas, $1 \leq i \leq n$ and $1 \leq j \leq m$, if not specifically denoted otherwise.
+In the following formulas, $1 \leq i \leq n$ and $1 \leq j \leq m$, if not noted otherwise.
 
-\paragraph{Initialization of the Matrices}
+\paragraph{Matrix Initialization}
 \label{sec:formulas:init}
 \begin{align*}
 M^0(0,0) &= -\infty \\
@@ -553,17 +542,21 @@ M^2(i,j) &= M^2(i,j) + \max\{M^1(i,j-1), M^2(i,j-1)\}
 \subsubsection{Pre-computing the Logarithms}
 In general, replacing a multiplication by two logarithms and an addition is more costly. 
 However, we managed to circumvent the additional computational cost of log space. 
-This is because our formulas consist of sums of only $25$ different logarithms {\bf explain why this is the case; SL: Because there are $25$ different logarithms in the pasted formulas above \ldots to be honest I don't really know how to explain this other than by inserting formulas, applying logarithm rules and observing something like the values for later entries are the values for earlier entries plus something} which we can simply 
-pre-compute.
+This is because our formulas above contain only $25$ different logarithm invocations that only depend on given, constant input parameters.
+hence, all these logarithms can be pre-computed.
 
-A major disadvantage of logarithmic transformations is that any error in the logarithm computation accumulates over a series of operations. 
+A major disadvantage of logarithmic transformations is that errors in the logarithm computation accumulate over a series of operations. 
 To further investigate this, we used the high precision mathematical library of the \texttt{boost}-framework \cite{boost}. 
 It offers datatypes that dynamically adapt their floating point precision to avoid numerical errors as well as under-/overflow. 
 Our initial idea was to use this library only for pre-computing the logarithms, and thereby reduce the induced runtime overhead. 
-However, transforming these arbitrary precision datatypes to standard double precision floating point values proved to be problematic, since 
-it introduced additional loss of precision {\bf comapred to what? SL: Compared to \ldots actually nothing. We had the problem that by converting the numbers back to the double format, many places after the comma became totally different random numbers. We expected the numbers to just be truncated but this did not happen.}. Therefore, we abandoned this path.
+However, converting these arbitrary precision datatypes back into standard double precision floating point values 
+introduced additional loss of precision {\bf TODO: with respect to the standard log function?}, 
+when applying the respective conversion functions {\bf TODO: please name the conversion functions you used!}.
+Therefore, we abandoned this path.
 
-\subsection{Matrix Storage Schemes}
+We denote the code obtained by applying the above techniques and transformations the basic version.
+
+\subsection{Matrix Storage Schemes - Improved Version}
 \label{sec:caching}
 
 \subsubsection{Matrix as Array}
@@ -571,7 +564,7 @@ In the first, na\"ive implementation, we stored each matrix ($M^0, M^1$, $M^2$) 
 The matrix entry at position $(i,j)$ is stored at index position $i*(m+1)+j$ in the array (see Figure~\ref{fig:rowmajor}).
 
 To illustrate the shortcomings of this approach, consider the following example: assume that six matrix rows fit into one cache line. 
-Then, performing one iteration of the inner DP loop requires loading three cache lines, one per matrix. 
+Then, performing one iteration of the inner DP loop requires loading three cache lines, one per DPM. 
 This is depicted in part a) of Figure~\ref{fig:cachelines}.
 If we further assume a cache capacity of only two cache lines, 
 every iteration would then force one of the lines to be swapped out, causing memory overhead.
@@ -586,19 +579,21 @@ Each color represents a distinct cache line.}
 
 \subsubsection{Array-of-Structs Data Structure}
 The dynamic programming step (see Algorithm~\ref{alg:dp}) accesses the matrices $M^0, M^1$ and $M^2$ at the same index position to determine the maximum entry. 
-Thus, we improved data locality by storing the entries from the three matrices at the same index position contiguously in memory. 
+Thus, we improved data locality by storing the entries from the three matrices located at identical index positions contiguously in memory. 
 For this, we implemented a data structure called \texttt{MatrixEntry} that consists of three double values: \texttt{$m_0$}, \texttt{$m_1$} and \texttt{$m_2$}. 
 Then, we used the Matrix as Array approach as before, but containing \texttt{MatrixEntry} structs as elements instead of simple 
 \texttt{double} values (see Figure~\ref{fig:aos}). 
 
 Let us now consider the example in Figure~\ref{fig:cachelines} again. 
 With six matrix lines filling one cache line, a cache line now contains data from all three matrices. 
-Consequently, all operations for a single computational iteration {\bf what do you mena by computational iteration? SL: A step in the inner for-loop, i.e. the computation of a single matrix entry after the initialization already happened} 
-will need to access two cache lines at most. 
+Consequently, all operations for a single DP cell update 
+will access at most two cache lines. 
 If we assume a cache capacity of two cache lines again, cache misses will now only occur when traversing row boundaries.
 
-By using the \texttt{perf stat} tool, we found that using the \texttt{MatrixEntry} data structure indeed reduced {\bf by how much, please quantify! SL: We had problems to quantify this -- sucessive runs of the code using perf stat returned highly oscillating values, but most of the time the number page faults was lower for the version with the MatrixEntry structure than for the version without}
-the number of page faults {\bf is this really called page faults? shouldn't it be cache misses? SL: Yes. The perf stat call only prints the number of page faults that occured during the run. No cache misses measured.}.
+By using the \texttt{perf stat} tool, we found that using the \texttt{MatrixEntry} data structure indeed reduced 
+the number of page faults which we use as a proxy for cache efficiency. 
+{\bf why didn't you use cachegrind then if perf-stat yielded variable results and only reprts page faults?}
+
 
 \begin{algorithm}
 
@@ -655,28 +650,28 @@ the number of page faults {\bf is this really called page faults? shouldn't it b
   ([yshift=4pt]n3.north east) ;
 
 \end{tikzpicture}
-\caption{Array-of-Structs data structure used to store the three matrices in memory. Each \texttt{MatrixEntry} elemnt stores 
-the entries of a single coordinate for all three matrices. The structs are stored contiguously, as the figure depicts, in row-major order.}
+\caption{Array-of-Structs data structure for storing the three matrices in memory. Each \texttt{MatrixEntry} element stores 
+the entries of a single inbdex for all three matrices. The structs are stored contiguously in row-major order.}
 \label{fig:aos}
 \end{figure}
 
 
 \subsubsection{Alternative Storage Schemes}
 \label{par:otherattempts}
-{\bf TODO: need to think how to match/connect this with the indexing that team I developed} 
 
 Since each iteration in the dynamic programming step needs to access the top, left, and upper-diagonal elements of the matrices, 
-a wave-front-like storage of the matrix (see Figure~\ref{fig:wavefront}) entries yields the lowest amount of expected cache misses. 
-Finding an inexpensive-to-compute {\bf do you mean easy or inexpensive? SL: changed it} closed formula that maps the index position $(i,j)$ representing the row and column of a matrix 
-to wave-front-coordinates turned out to be challenging. 
-The index of the diagonal is $i+j$, the sum of row index and column index. 
-Determining the number of elements in the diagonal and especially the correct position within the diagonal proved more difficult though.
-Since were not able to come up with an easy {\bf still not sure what you mean by easy; SL: Fast enough to compute. The indexing formulas we came up with during the practical were too computationally expensive and required more computations than the actual filling of the matrices} formula for the mapping, 
-we tried storing pre-computed index mappings in an additional matrix. 
-However, this slowed down the program as computing the mapped indices required more arithmetic operations than needed for the actual TKF algorithm.
+storing the matrix anti-diagonals linearly (see Figure~\ref{fig:wavefront} and considerations by Team I) 
+will minimize cache misses. 
+Finding an inexpensive-to-compute closed formula that maps the index position $(i,j)$ representing the row and column of a matrix 
+to wave-front-coordinates turned out to be challenging (see also discussion by Team I in Section~\ref{ssec:memorylayout}). 
+The index of the diagonal is $i+j$, the sum of the row index and the column index. 
+Determining the number of elements on the anti-diagonal and especially the correct position along the anti-diagonal proved more difficult though. 
+The indexing formulas we tested were too computationally expensive and required more computations than the actual cell updates.
+As an alternative, we tried storing pre-computed index mappings in an additional matrix. 
+However, this slowed down the program as computing the mapped indices required more arithmetic operations than needed for the actual TKF91 algorithm.
 Figure~\ref{fig:offset} illustrates the main problem which has to be solved 
-for effective wave-front indexing effective: Given an wave-front index $k$, how do we obtain the indices for the upper, upper-left-diagonal and left element of the matrix? 
-While the required offsets are constant within a {\bf anti?}diagonal, they change for different {\bf anti?}diagonals in the matrix.
+for efficiently indexing-diagonals: Given an wave-front index $k$, how do we obtain the indices for the upper, upper-left-diagonal, and left element of the matrix? 
+While the required offsets are constant for a single anti-diagonal, they change for successive anti-diagonals.
 
 \begin{figure}
 
@@ -717,7 +712,7 @@ While the required offsets are constant within a {\bf anti?}diagonal, they chang
 \begin{figure}
 \centering
 \includegraphics[scale=0.5]{images/unnamed0.pdf}
-\caption{Offsets in wave-front indexing}
+\caption{Offsets in wave-front/anti-diagonal indexing}
 \label{fig:offset}
 \end{figure}
 
@@ -727,10 +722,12 @@ While the required offsets are constant within a {\bf anti?}diagonal, they chang
 %- store sequences as array of integers, used as a fast way to index precomputed logarithm values
 %- fill matrices simultaneously (in the same loop)
 
+We denote the code obtained by applying the above storage scheme, the improved version.
+
 \subsection{Vectorization Attempts}
 \label{sec:vector}
 During code development we conducted a partial vectorization for two of our implementations: 
-the basic Log-space implementation (Section~\ref{sec:log}) and the improved Log-space implementation, using a more 
+the basic Log-space implementation (Section~\ref{sec:log}) and the improved Log-space implementation (section~\ref{sec:caching}), using a more 
 cache-efficient data structure to store the matrices (Section~\ref{sec:caching}).
 
 In both cases we mainly focused on vectorizing the code that initializes the three matrices. 
@@ -739,72 +736,91 @@ part of the code required $75-80\%$ of overall runtime.
 Additionally, as the initializations are completely independent of each other, this part should be straight-forward to vectorize.
 
 Several code transformations were necessary to vectorize the code. 
-First, we needed to guarantee that vector \texttt{load} and \texttt{store} operations are invoked on correctly aligned memory addresses. 
+First, we had to ensure that vector \texttt{load} and \texttt{store} operations are performed on correctly aligned memory addresses (see discussion by Team I). 
 Secondly, we needed to devise a strategy for iterating over matrices and handling matrix sizes that are not multiples of the vector width.
-Finally, we needed to store calculation terms, such as the $\log(\pi)$'s and $P_{a_i \to b_j}$'s, {\bf what do you mean by calculation parameters? Pierre: added some clarification} into the appropriate vector types and 
+Finally, we needed to store calculation terms (e.g., $\log(\pi)$'s or $P_{a_i \to b_j}$'s), in appropriate vector types and 
 had to replace all basic arithmetic operations by their vectorized counterparts.
 
 \subsubsection{Log-space implementation}
-For the vectorization of the basic {\bf did you properly introduce what the basic implementation is? Pierre: First paragraph in ``Vectorization attempts'' we name it as such, provide a back reference to 4.1. Maybe we could introduce it directly under the 4.1 section header? then back ref here again} 
-Log-space implementation we implemented appropriate memory alignment by using the \texttt{\_\_attribute\_\_(aligned(\textit{size}))} attribute for stack allocations, 
+For the vectorization of our basic version (see Section~\ref{sec:log}), we implemented an appropriate memory alignment 
+by using the \texttt{\_\_attribute\_\_(aligned(\textit{size}))} attribute for stack allocations, 
 and the \texttt{posix\_memalign} function for heap allocations.
 
-As a consequence, we also changed the iterations through the matrices to start at entry $0$ of each row, as starting iteration at position $1$ would result in incorrectly aligned memory accesses. 
-Furthermore, as we stored the rows of the matrices contiguously in memory, we had to pad the row sizes 
-to ensure the correct alignment of the first entry in each row.
+We also changed the iterations through the matrices to start at entry $0$ of each row, as starting iterations at position $1$ 
+would result in memory accesses at incorrectly aligned adresses. 
+Furthermore, as we store the matrix rows contiguously in memory, 
+we had to pad the rows to ensure a correct alignment of the first entry in each row.
 
-The strategy we chose to deal with row dimensions that are not multiples of the vector width is straight forward. 
-Per row, we compute as much as possible via vector intrinsics and the remainder sequentially. 
+The strategy we chose to deal with row dimensions that are not multiples of the vector width is straight-forward. 
+For each row, we compute as much as possible via vector intrinsics and the remainder sequentially. 
 
 \subsubsection{Version using Array of Structs data structure}
-While the strategy for dealing with row dimensions that do not fit vector widths remained the same in the improved version of our program, 
-we had to apply several modifications to use vector intrinsics in conjunction with the more cache-efficient data structure.
+While the strategy for dealing with row dimensions that do not fit vector widths remained the same in the improved version (introduced in Section~\ref{sec:caching}) of our program, 
+we had to apply several modifications to be able to use vector intrinsics in conjunction with the more cache-efficient data structure.
 
 As Figure~\ref{fig:aos} shows, using the Array-of-Structs scheme results in a non-contiguous storage of row entries. 
-As a consequence, simply loading and storing vector registers cannot be used here. 
-To this end, we implemented load and store operations that fit our data structure. These operations rely on vector functions that load and store single double precision floating point values. 
-An advantage of this is that correct data alignment is not required any more. 
-However, we believe {\bf why do you believe this, don't you have experimental evidence? Pierre: we didn't test them in isolation, but we assume that the load/store intrinsics that require contig. memory (\_mm\_load\_pd) work faster than my function using \_mm\_loadl\_pd and \_mm\_loadh\_pd} that this approach also induces a significant performance overhead 
-compared to load/store intrinsics that work on contiguous memory. {\bf what are classically used operations? Pierre: changed it}.
+As a consequence, loading and storing vector registers is not straight-forward. 
+To this end, we implemented load and store operations that fit our data structure. 
+These operations rely on vector functions that load and store single double precision floating point values. 
+An advantage of this is that we do not need to enforce correct data alignment any more. 
+However, a single  \textit{\_mm\_load\_pd} on contiguous memory is substantially faster than a series of \textit{\_mm\_loadl\_pd} and \textit{\_mm\_loadh\_pd} operations
+on non-contiguous memory locations.
+
 
 \subsubsection{Thoughts on wave-front vectorization}
-{\bf Maybe somehow make the wavefront parts more consistent to avoid redundnacies?} 
-As the dynamic programming step of the TKF91 algorithm has data dependencies to the cells left of, above and diagonally left above of the cell to be computed, 
-parallelization/vectorization requires a \textit{wave-front} approach.
+%AS: habe das auskommentiert, ist zu redundant mit TEAM-I
+%{\bf Maybe somehow make the wavefront parts more consistent to avoid redundnacies?} 
+%As the dynamic programming step of the TKF91 algorithm has data dependencies to the cells left of, above and diagonally left above of the cell to be computed, 
+%parallelization/vectorization requires a \textit{wave-front} approach.
 
-In a wave-front parallelization scheme, matrix entries are not computed by row or by column, but rather by computing the entries of each \textit{anti-diagonal} in parallel. 
-Crucially, the individual anti-diagonals have to be computed sequentially and in-order when dependencies exist between subsequent anti-diagonals. 
-In this case, the current anti-diagonal is the front of the wave traversing the DP matrix.
+%In a wave-front parallelization scheme, matrix entries are not computed by row or by column, but rather by computing the entries of each \textit{anti-diagonal} in parallel. 
+%Crucially, the individual anti-diagonals have to be computed sequentially and in-order when dependencies exist between subsequent anti-diagonals. 
+%In this case, the current anti-diagonal is the front of the wave traversing the DP matrix.
 
-{\bf The following sentence is too long and confusing, please re-formulate! Pierre: done} The log-space {\bf you use log-space inconssitently sometimes Log-spaca and sometimes as log-space} 
-version of TKF91 reduces the dynamic programming step to finding the greatest of two to three values, depending on the matrix. This in turn meant, that the relative amount of time spent doing so represents a negligible part of the overall algorithm. 
-Nevertheless, we invested some time to devise a vectorized wave-front version of the program.
+Our log-space version {\bf which one of the two?} of TKF91 reduces the DP cell update to determining the largest of two or three values. 
+In turn, this means that the relative amount of time spent for DP cell updates is negligible. 
+Nevertheless, we invested time to explore potential vectorized wave-front versions of the program.
 
-Initially, we attempted to find a suitable way for storing and accessing the matrix cells, 
-to store data contiguously with respect to the wave-front data access pattern. 
-We concluded that merely indexing {\bf accessing or indexing? Pierre: I guess indexing is more specific, to me accessing encompassed indexing. changed it} a cell, using the usual row-, and column coordinates, requires a significant amount of computation by itself. 
-Most importantly, indexing a cell {\bf what? Pierre: changed it} requires significantly more arithmetic operations {\bf please quantifdy! Pierre: we never found out, we abandoned trying to find a indexing formula when we realized that just accessing would require on the order of 20-30 operations,as opposed to the normal 2-3} than the actual computations conducted for each matrix entry.
-
-Furthermore, our preliminary benchmarks had yielded absolutely no performance increase for the vectorized versions of either the basic log-space, or the enhanced, Array-of-Structs implementation{\bf what are thos major im,plementations, maybe you 
-should find better names for them Pierre: tried to name them}. 
-As a consequence, we abandoned the wave-front vectorization approach.
+Initially, as Team I, we investigated appropriate DP cell storage and access schemes, 
+to store the data contiguously with respect to the wave-front parallelization data access pattern.
+We found that, indexing a cell required 20-30 arithmetic operations as opposed to only 2-3 for the actual cell update.
+Thus, merely indexing a cell, using the standard row and column coordinates, requires a too large amount of computations. 
+Our preliminary benchmarks yielded absolutely no performance improvement for the vectorized versions of 
+the basic as well as the improved version of our code.
+Therefore, we abandoned the vectorized wave-front approach.
 
 
 \section{Evaluation and Testing}
 \label{sec:evaluation}
 
-\subsection{Benchmarks and Test Suites}
+{\bf TODO add some text here} 
+
+\subsection{Benchmarks Data}
 \label{ssec:benchmark}
 
-An automated test suite is extremely valuable for re-factoring and optimizing the code, in that it provides the confidence of being able to detect regressions early and get helpful hints on how to fix them. We used the \textit{ctest} module of \textit{CMake} to invoke a Python script driving our console wrapper through a number of inputs. As we also used a continuous integration service running the tests on new commits, we could easily spot when a change accidentally broke the build. This development process lead to a high level of satisfaction and faith to try out different ideas in separate branches, while immediately getting feedback.
+%An automated test suite is extremely valuable for re-factoring and optimizing the code, in that it provides the confidence of being able to detect regressions early and get helpful hints on how to fix them. We used the \textit{ctest} module of \textit{CMake} to invoke a Python script driving our console wrapper through a number of inputs. As we also used a continuous integration service running the tests on new commits, we could easily spot when a change accidentally broke the build. This development process lead to a high level of satisfaction and faith to try out different ideas in separate branches, while immediately getting feedback.
 
-{\bf TODO consistency}
+%{\bf TODO consistency}
 
-When the most obvious optimizations were done and we began to make use of vectorization instructions, we realized a benchmark suite based on the alignment data sets from the University of Oldenburg\footnote{http://goo.gl/nlD4nb} using the Celero C++ benchmarking library\footnote{https://github.com/DigitalInBlue/Celero} to have a reliable way of validating performance of our different approaches.
+For testing and performance assessment, we used empirical benchmark datasets. We download multiple sequence alignments (MSAs) from \url{http://goo.gl/nlD4nb}
+that were used in~\cite{bininda2005transalign}.
+%{\bf TODO: so these were multiple sequence alignments, how did you transform them/use them to test pair-wise alignment of unaligned sequenes?}
+
+As test platform we used the aforementioned reference hardware (see Section~\ref{setup}).
 
 \subsection{Results of Team I}
 
-From each of the six data sets, we picked ten nucleotide strings and computed all 45 pairwise alignments. We found that the median of five \textit{samples}, each of which consisting of the average of ten such \textit{iterations} (i.e. $5*10*45 = 2250$ alignments per data set) gave reliable performance estimates. As stated in Section~\ref{ssec:dataalignment}, we performed various performance comparisons based on this benchmark suite, such as the viability of different vector load and store schemes or the SoA, AoS, and AoSoA issue, of which the benchmark results on the reference hardware are depicted in Table~\ref{tbl:benchmark}. As already noted in Section~\ref{ssec:dataalignment}, we deemed the SoA approach the most performant.
+From each of the six MSAs, we picked ten sequences {\bf at random or how did you pick them???} and disaligned them.
+Then, we computed all possible 45 pairwise alignments between each set of ten sequences. 
+We found that the median of five samples, where each sample consisted of the average run-time for ten \textit{iterations} 
+(i.e., $5*10*45 = 2250$ pair-wise alignments per data set {\bf data-set consistent!}) 
+yielded stable run time estimates. 
+As mentioned in Section~\ref{ssec:dataalignment}, we performed various performance comparisons using this benchmark suite, 
+such as the viability of different vector load/store schemes or the comparison between the SoA, AoS, and AoSoA storage schemes.
+We depict the results of the SoA versus AoS versus AoSoA run time experiments in Table~\ref{tbl:benchmark}. 
+As already mentioned in Section~\ref{ssec:dataalignment}, the SoA approach performs best.
+
+{\bf  which parameters did you use as input for the stat.~alignment model? would be useful to show an example of a command line that you used to be able to reproduce your results. The results section should always contain or link to all data necessary for reprudicing the results! You should also state what exactly you measured, i.e., overall run-time kernel time etc.}
 
 \begin{table}[]
 \centering
@@ -822,21 +838,34 @@ vWF                                                                             
 \end{table}
 
 \subsection{Results of Team II}
-{\bf TODO} 
 
-We conducted all measurements on a desktop machine with $16$ GB RAM and
-a Intel\texttrademark~i7-2600 CPU with $4$ physical cores and hyper-threading.
+We first assess the performance and impact on the output of distinct logarithm implementations (Section~\ref{sec:crlibm}).
+Thereafter, we measure the run-time {\bf runtimes, run-times, run times} of our code in Section~\ref{team2-runtimes}.
+
+%We conducted all measurements on a desktop machine with $16$ GB RAM and
+%a Intel\texttrademark~i7-2600 CPU with $4$ physical cores and hyper-threading.
 
 \subsection{Different Logarithm Libraries}
 \label{sec:crlibm}
 
-Additionally to using the \texttt{log} function from the standard C++ header \texttt{<math.h>}, we also used the \texttt{crlibm} library by Daramy et al.~\cite{Daramy04}. It includes versions of the natural logarithm computation, which allows the type of rounding to be explicitly specified.
+In addition to the standard \texttt{log} function (from C++ \texttt{<math.h>}), 
+we also used the \texttt{crlibm} library by Daramy {\em et al.}~\cite{Daramy04}. 
+It includes versions of the logarithm function, which allow to explicitely specify the type of rounding strategy ({\bf for instance?}) to be used.
 
-In order to check the correctness of our resulting alignments, we computed the edit distance between the alignments we obtained by using different logarithm implementations. We assigned a cost of $1$ to insertions, deletions and substitutions of single letters. We picked all pairs of sequences from the \\ \texttt{BDNF\_unaligned\_sequences.fas} data set from \url{http://www.uni-oldenburg.de/fileadmin/user_upload/biologie/ag/systematik/download/Programs/benchMark_data.tar.gz}.
+To assess the correctness of our alignments, we computed the edit distance between the alignments {\bf how is the edit distance between alignemnts defined? This needs to be explained!} 
+obtained by using different logarithm implementations. 
+We assigned a cost of $1$ to insertions, deletions, and substitutions of single letters. 
+For our tests, we aligned all possible pairs of sequences from the BDNF MSA of the aforementioned benchmark data (see Section~\ref{ssec:benchmark}).
 
-For the remaining parameters, we used $\lambda=1, \mu=2, \pi = (0.27, 0.24, 0.26,0.23)$ and $\tau = 0.1$. The edit distances were computed in relation to using the logarithm function from \texttt{Boost.Multiprecision}. 
+For the remaining parameters, we used $\lambda:=1, \mu:=2, \pi:= (0.27, 0.24, 0.26,0.23)$ and $\tau := 0.1$. 
+We computed edit distances between the calculated alignments and the reference alignment that uses the \texttt{Boost.Multiprecision} logarithm implementation. 
 
-In particular the \texttt{log\_ru} function, which explicitly rounds up, produces a notable change in alignment compared to the logarithm function from \\ \texttt{Boost.Multiprecision} as can be seen in Table~\ref{fig:dist}. The computed likelihood scores were highly similar and the differences in the alignments were minimal as can be seen in Figure~\ref{fig:alignments}. We finally decided to use the \texttt{log\_ru} function from the \texttt{crlibm} library because it had the most consent with the alignments returned by the reference implementation (\url{http://sco.h-its.org/exelixis/web/teaching/practical15/scaledCode/tkf91_scaling.tar.gz}).
+In particular the \texttt{log\_ru} function {\bf where does this come from?}, which explicitly rounds up, produces a notably differnt alignment compared to 
+\texttt{Boost.Multiprecision} reference alignment (see Table~\ref{fig:dist}). 
+{\bf the following sentence is inconsisten, first you say notably different and then highly similar?} 
+The computed likelihood scores were highly similar and the differences in the alignments were minimal {\bf between what and what?} as can be seen in Figure~\ref{fig:alignments}. 
+We finally decided to use the \texttt{log\_ru} function from the \texttt{crlibm} library because it yielded the same results as the reference implementation 
+(\url{http://sco.h-its.org/exelixis/web/teaching/practical15/scaledCode/tkf91_scaling.tar.gz}) in most cases.
 
 \begin{table}[h!]
 
@@ -844,14 +873,14 @@ In particular the \texttt{log\_ru} function, which explicitly rounds up, produce
 
 \begin{tabular}{|c|c|}
 \hline 
-Logarithm Function & Average Edit Distance \\ 
+Logarithm Function & Average Edit Distance to Reference Alignment\\ 
 \hline 
 \texttt{log} from \texttt{<math.h>} & 2.15 \\ 
 \hline 
 \texttt{log\_ru} from \texttt{crlibm} & 33.15 \\ 
 \hline 
 \end{tabular} 
-\caption{Average edit distances from the alignment returned by using  \texttt{Boost.Multiprecision} of different logarithm implementations.}
+\caption{Average edit distances from the \texttt{Boost.Multiprecision} reference alignment for different logarithm implementations.}
 \label{fig:dist}
 \end{table}
 
@@ -882,22 +911,27 @@ Logarithm Function & Average Edit Distance \\
 \texttt{ACGACTAGTCA-GC-TACG-AT-CGA-CT-C-ATTCAACTGACTGACA-TCGACTTA} \\
 \texttt{A-GAG-AGTAATGCATACGCATGC-ATCTGCTATT\textcolor{red}{\underline{C---}}TG-CTG-CAGTGG--T-A}
 
-\caption{Difference in alignments using the input parameters $\pi=(0.25,0.25,0.25,0.25), \lambda=1, \mu = 2, \tau = 0.1$}
+\caption{Numerical alignment differences for input parameters $\pi:=(0.25,0.25,0.25,0.25), \lambda:=1, \mu:= 2, \tau := 0.1$}
 \label{fig:alignments}
 \end{figure}
 
 \subsection{Runtime Measurements}
+\label{team2-runtimes}
 
-The input sequences used to measure execution time were four pairs of randomly generated sequences of length $10$, $100$, $1000$ and $10000$ nucleotides. Sequences did not contain ambiguous characters. 
+As input sequences for measuring run times,  we used four pairs of randomly generated sequences with $10$, $100$, $1000$, and $10000$ nucleotides. 
+%The sequences did not contain ambiguous characters. 
 
-We measured the execution times around the kernel of the program, that is excluding any I/O required to load parameters and input sequences, or output of the algorithm. Kernel execution was performed multiple times per input and subsequently averaged. The number of runs executed was dependent on the size of the input, so as to balance accuracy and overall benchmark time (see Table~\ref{fig:runs}). 
+We measured the execution times around the kernel of the program, that is, excluding any I/O required to load parameters and input sequences, or the output of the program. 
+{\bf mention if this included or excluded DP matrix init times}
+We executed the kernel multiple times for each dataset and subsequently averaged the run times. 
+To balance accuracy and overall benchmark time (see Table~\ref{fig:runs}) we used different number of kernel runs, depending on the dataset size.
 
 \begin{table}
 \centering
 
 \begin{tabular}{|c|c|}
 \hline 
-Length of Sequence & Number of Runs \\ 
+Length of Sequences & Number of Runs \\ 
 \hline 
 $10$ & $10000$ \\ 
 \hline 
@@ -914,7 +948,10 @@ $10000$ & $10$ \\
 
 \begin{figure}[h!]
 \includegraphics[width=\textwidth]{images/benchplot.png}
-    \caption{Comparison of average run times of the different implementations. \texttt{sse3} and \texttt{avx} post-fixes denote the vectorized versions of the programs, using SSE3 and AVX vector intrinsics respectively (Section~\ref{sec:vector}). \texttt{log} denotes, that a version built on the log-space transformed version of TKF91 (Section~\ref{sec:log}). Versions using the Array-of-Structs method of storing matrices (Section~\ref{sec:caching}) are denoted by the \texttt{caching}-keyword, and the \texttt{round\_up}-keyword denotes the use of the \texttt{crlibm} library logarithm function \texttt{log\_ru} (Section~\ref{sec:crlibm}).}
+    \caption{Comparison of average run times of different implementations. \texttt{sse3} and \texttt{avx} post-fixes denote the vectorized versions of the programs, 
+using SSE3 and AVX vector intrinsics (Section~\ref{sec:vector}). With \texttt{log} we denote the log-space transformed versions of TKF91 (Section~\ref{sec:log}). 
+Versions using Arrays-of-Structs to store matrices (Section~\ref{sec:caching}) are denoted by \texttt{caching}; \texttt{round\_up} denotes versions relying on the \texttt{crlibm} 
+library logarithm function \texttt{log\_ru} (Section~\ref{sec:crlibm}).}
 \label{fig:runtime}
 \end{figure}
 
