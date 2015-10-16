@@ -873,14 +873,15 @@ Thereafter, we measure the runtime of our code in Section~\ref{team2-runtimes}.
 
 In addition to the standard \texttt{log} function (from C++ \texttt{<math.h>}), 
 we also used the \texttt{crlibm} library by Daramy {\em et al.}~\cite{Daramy04}. 
-It includes versions of the logarithm function, which allow to explicitly specify the type of rounding strategy ({\bf for instance?}) to be used.
+It includes versions of the logarithm function, which allow to explicitly specify the type of rounding strategy, namely rounding up, down, towards zero or towards the nearest integer, ({\bf for instance?}) to be used.
 
 To assess the correctness of our alignments, we computed the edit distance between the alignments {\bf how is the edit distance between alignments defined? This needs to be explained!} 
 obtained by using different logarithm implementations. 
+The edit distance is a metric to quantify the difference between two strings. It counts the edit operations, insertions, deletions and substitutions, required to transform one string into the other. Each edit operation is assigned a cost value, resulting in a weighted sum of operations that form the final value.
 We assigned a cost of $1$ to insertions, deletions, and substitutions of single letters. 
 For our tests, we aligned all possible pairs of sequences from the BDNF MSA of the aforementioned benchmark data (see Section~\ref{ssec:benchmark}).
 
-For the remaining parameters, we used $\lambda:=1, \mu:=2, \pi:= (0.27, 0.24, 0.26,0.23)$ and $\tau := 0.1$. 
+For the remaining parameters, we used $\lambda:=1, \mu:=2, \pi:= (0.27, 0.24, 0.26, 0.23)$ and $\tau := 0.1$. 
 We computed edit distances between the calculated alignments and the reference alignment that uses the \texttt{Boost.Multiprecision} logarithm implementation. 
 
 In particular the \texttt{log\_ru} function from the \texttt{crlibm} library, which explicitly rounds up, produces a notably different alignment compared to 
@@ -944,7 +945,7 @@ Logarithm Function & Average Edit Distance to Reference Alignment\\
 As input sequences for measuring runtimes,  we used four pairs of randomly generated sequences with $10$, $100$, $1000$, and $10000$ nucleotides. 
 %The sequences did not contain ambiguous characters. 
 
-We measured the execution times around the kernel of the program, that is, excluding any I/O required to load parameters and input sequences, or the output of the program. 
+We measured the execution times around the kernel of the program, that is, excluding any I/O required to load parameters and input sequences, or the output of the program. The allocation and initialization of the three matrices are part of the kernel and as such were included in out measurements.
 {\bf mention if this included or excluded DP matrix init times}
 We executed the kernel multiple times for each dataset and subsequently averaged the runtimes. 
 To balance accuracy and overall benchmark time (see Table~\ref{fig:runs}) we used different number of kernel runs, depending on the dataset size.
