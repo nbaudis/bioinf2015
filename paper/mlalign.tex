@@ -121,7 +121,7 @@ Where $\lambda$ and $\mu$ denote the birth and death rate, $\pi_x, x \in \{A,C,G
 $P_{x \rightarrow y}$ the transition probability from $x$ to $y$, and $\overline{p_n}(t)$ the probability that after time $t$ a so-called mortal link has exactly $n$ descendants. 
 As already mentioned, the values for $t$, $\lambda$, $\mu$, and $\pi$ are given as input. 
 The values $\overline{p_n}$ can be pre-computed in constant time. For more details, please refer to the original paper~\cite{felsenstein1981evolutionary} and the on-line 
-task specification at \url{http://sco.h-its.org/exelixis/web/teaching/practical15/description/tkf91.pdf}.
+task specification at \url{http://sco.h-its.org/exelixis/web/teaching/practical15/description/tkf91.pdf}. {\bf TODO (Daniel) $\beta(t)$ is never mentioned in the text, although it appears in the equations. Right now I can not make up a catchy definition in words, is this even necessary when referencing the task-specification?}
 
 To the best of our knowledge, there is a limited amount of related work on optimizing the algorithm. 
 In 2000 Hein {\em et al.}\cite{hein2000statistical} presented several techniques for optimizing the algorithm. However, their focus was slightly different. One main 
@@ -138,6 +138,7 @@ In addition there also exists an R package (see \url{http://cran.us.r-project.or
 We did therefore not compare it to our implementations. 
 
 {\bf TODO ALL (including Tomas!): is there anything else we should mention, please search a bit?}
+{\bf TODO (Daniel) There is another implementation for the tkf91 model in the Handel package of DART using MCMC \url{http://biowiki.org/HandelPackage?redirectedfrom=Main.HANDEL} - it is taged as "older program" so I don't know if it is still maintained and/or optimized.}
 
 In the rest of the paper we refer to the dynamic programming paradigm as DP, and to dynamic programming matrices as DPM.
 The source codes developed by teams I and II are available for download at \url{https://github.com/nbaudis/bioinf2015} under the GNU GPL license.
@@ -258,10 +259,10 @@ In Figure~\ref{fig:pairingfunc}, we show the index calculations for the anti-dia
 The blue frame denotes the actual boundaries of this $5\times3$ DP matrix, the blue cells represent the opening part, 
 the green cells inside the frame the intermediate part, and the red cells inside the frame the closing part. 
 Green and red cells outside the matrix boundaries represent the offset calculation for the intermediate and closing part. 
-For the DP calculations, only indices that correspond to DPM entries are required. 
+For the DP calculations, only indices that correspond to DPM entries are required. {\bf TODO (Daniel) Note, that evaluating the index function runs in constant time and space complexity, which is important to reduce overhead for element access in the DPM.}
 
 Given the anti-diagonal indexing scheme for a single matrix, we can now 
-devise the memory layout for the three DP matrices ($M_0,M_1,M_2$).  
+devise the memory layout for the three DP matrices {\bf TODO (Daniel) DPMs?} ($M_0,M_1,M_2$).  
 This is because calculating a DP value requires 
 accessing values from all three matrices, which are located in different
 memory regions.  
@@ -301,7 +302,7 @@ them, which requires several, potentially costly, vector shuffle operations.
 Figure~\ref{fig:shufflesse} illustrates these shuffle operations. 
 For $m_x^y$, the subscript $x$ indicates
 the index of the matrix and the superscript $y$ the SSE3/AVX vector element
-index $y$.  The first row of the Figure depicts the {\em AoS} data layout. 
+index $y$ {\bf TODO (Daneil) Is it correct to repeat the $y$ at the end of the sentence? I would also insert another verb as "denotes" ...and the superscript $y$ denotes the SS3/AVX...}.  The first row of the Figure depicts the {\em AoS} data layout. 
 Initially, we perform a vector \texttt{load} operation
 to load the data into temporary vector registers. 
 Thereafter, we shuffle the temporary vectors such that (i) each vector only contains elements from one of the three DP matrices and 
@@ -418,7 +419,7 @@ for all possibles values of $n$ (i.e., $3$, $2$, and $1$).
 \subsection{Data Alignment}
 \label{ssec:dataalignment}
 
-When vectorizing along the anti-diagonals, accessing the memory in the DPMs when they are stored in row-, or column-major order
+When {\bf TODO (Daniel) Remove this When?} vectorizing along the anti-diagonals, accessing the memory in the DPMs when they are stored in row-, or column-major order
 prevents deploying efficient vector operations for loading the values from the matrices into vector registers. 
 For such a matrix layout, the performance of the inner DP loop becomes heavily memory-bound. 
 Therefore, we used the aforementioned layout by consecutive anti-diagonals together with the struct of arrays approach (see section~\ref{ssec:memorylayout}), 
@@ -782,7 +783,7 @@ To this end, we implemented load and store operations that fit our data structur
 These operations rely on vector functions that load and store single double precision floating point values. 
 An advantage of this is that we do not need to enforce correct data alignment any more. 
 However, a single  \texttt{\_mm\_load\_pd} on contiguous memory is substantially faster than a series of \texttt{\_mm\_loadl\_pd} and \texttt{\_mm\_loadh\_pd} operations
-on non-contiguous memory locations.
+on non-contiguous memory locations. {\bf TODO (Daniel) Only considering SSE3? since loadl and loadh are available only in SSE3}
 
 
 \subsubsection{Thoughts on wave-front vectorization}
