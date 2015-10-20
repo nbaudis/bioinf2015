@@ -156,6 +156,8 @@ We conclude in Section~\ref{conclusion}.
 \label{setup}
 
 Courses at the Master level in our computer science department are organized in so-called modules over two semesters.
+\textbf{TODO (Nikolai) For the sake of correctness: There are also modules over
+only one semester.}
 In the first semester of the Bioinformatics module, we teach a lecture called ``Introduction to Bioinformatics for Computer Scientists'', since KIT does not offer
 a stand-alone Bioinformatics degree. This lecture covers basic topics such as an introduction to molecular biology, classic pair-wise sequence alignment,
 BLAST, de novo and by-reference sequence assembly, multiple sequence alignment, phylogenetic inference, MCMC methods, and population genetics.
@@ -262,7 +264,8 @@ Green and red cells outside the matrix boundaries represent the offset calculati
 For the DP calculations, only indices that correspond to DPM entries are required. {\bf TODO (Daniel) Note, that evaluating the index function runs in constant time and space complexity, which is important to reduce overhead for element access in the DPM.}
 
 Given the anti-diagonal indexing scheme for a single matrix, we can now 
-devise the memory layout for the three DP matrices {\bf TODO (Daniel) DPMs?} ($M_0,M_1,M_2$).  
+devise the memory layout for the three DP matrices {\bf TODO (Daniel) DPMs?} ($M^0,M^1,M^2$).
+%(Nikolai) I changed the matrix names to use superscripts to keep it consistent
 This is because calculating a DP value requires 
 accessing values from all three matrices, which are located in different
 memory regions.  
@@ -312,7 +315,7 @@ For AVX, three additional \texttt{blend} operations are required to correctly or
 
 \paragraph*{Array of Structs of Arrays (AoSoA)} ({\small\texttt{struct \{ double m0[v],
 m1[v], m2[v]; \} data[m];}}) This layout stores vectors such that
-adjacent elements for each of the three matrices can be directly loaded into a SSE3/AVX vector. 
+adjacent elements for each of the three matrices can be directly loaded into an SSE3/AVX vector. % (Nikolai) Quick typo fix
 While solving both aforementioned problems (low data locality and costly vector operations),
 this complicates DP cell accesses above the current anti-diagonal.
 The required values above the current anti-diagonal are not stored contiguously 
@@ -330,7 +333,9 @@ AoSoA layouts (also see Table~\ref{tbl:benchmark} in Section~\ref{res-team-1}).
 \subsection{Memoization}
 \label{ssec:memo}
 
-The \cite{TKF91} model has several parameters. Thus, it initially seemed inevitable to carry out the non-trivial computations for filling DP cells 
+The TKF91~\cite{TKF91} model
+%(Nikolai) Added the model name so that the sentence would make sense without the reference.
+has several parameters. Thus, it initially seemed inevitable to carry out the non-trivial computations for filling DP cells
 from scratch for each individual cell.
 However, after analyzing which expressions are constant and can thus be pre-computed and reused (i.e., memoized), 
 we reduced the operations required for calculating a DP cell value to just three: indirection, summation, maximum.
@@ -392,13 +397,13 @@ Thus, we abandoned this approach.
 \label{ssec:vectorization}
 
 We implemented a vectorized version for computing 
-$M_0$, $M_1$, and $M_2$ using \texttt{add}, \texttt{max}, \texttt{load}, and \texttt{store}
+$M^0$, $M^1$, and $M^2$ using \texttt{add}, \texttt{max}, \texttt{load}, and \texttt{store}
 operations for both SSE3 and AVX instructions.  
 With these operations, we can process $n$ matrix elements in parallel.  
 Depending on the location of the vector on the anti-diagonal that is being processed, there will be $0 < n \leq V$ valid elements to operate on 
 per vector (with vector size $V := 4$ for AVX and $V := 2$ for SSE3). 
 
-Usually, data that has to be loaded into vectors need to be aligned, that is, the starting
+Usually, data that has to be loaded into vectors needs to be aligned, that is, the starting % (Nikolai) Quick typo fix
 address of the vector data needs to be a multiple of 16 or 32 bytes. This memory alignment allows to
 use the aligned versions of the vector \texttt{load} and \texttt{store} operations,
 which are faster than the respective unaligned operations.
@@ -419,7 +424,7 @@ for all possibles values of $n$ (i.e., $3$, $2$, and $1$).
 \subsection{Data Alignment}
 \label{ssec:dataalignment}
 
-When {\bf TODO (Daniel) Remove this When?} vectorizing along the anti-diagonals, accessing the memory in the DPMs when they are stored in row-, or column-major order
+When {\bf TODO (Daniel) Remove this When? (Nikolai) I think it's correct with the When. This is a complicated sentence, however.} vectorizing along the anti-diagonals, accessing the memory in the DPMs when they are stored in row-, or column-major order
 prevents deploying efficient vector operations for loading the values from the matrices into vector registers. 
 For such a matrix layout, the performance of the inner DP loop becomes heavily memory-bound. 
 Therefore, we used the aforementioned layout by consecutive anti-diagonals together with the struct of arrays approach (see section~\ref{ssec:memorylayout}), 
@@ -752,6 +757,10 @@ cache-efficient data structure to store the matrices (Section~\ref{sec:caching})
 In both cases we mainly focused on vectorizing the code that initializes the three matrices. 
 This is because, our analyses with \texttt{Valgrind callgrind} revealed that this 
 part of the code required $75-80\%$ of overall runtime. 
+\textbf{TODO (Nikolai) Doesn't this depend on the sequence length? I guess the
+  complexity of the initialization increases linearly with increasing sequence length, while the
+  DP step's complexity increases exponentially; so focusing on the DP step would
+  become more important for large sequences.}
 Additionally, as the initializations are completely independent of each other, this part should be straight-forward to vectorize.
 
 Several code transformations were necessary to vectorize the code. 
