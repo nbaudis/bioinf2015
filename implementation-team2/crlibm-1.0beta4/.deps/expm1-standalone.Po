@@ -1,0 +1,49 @@
+expm1-standalone.o: expm1-standalone.c /usr/include/stdc-predef.h \
+ crlibm.h crlibm_private.h scs_lib/scs.h scs_lib/../crlibm_config.h \
+ /usr/include/inttypes.h /usr/include/features.h /usr/include/sys/cdefs.h \
+ /usr/include/bits/wordsize.h /usr/include/gnu/stubs.h \
+ /usr/include/gnu/stubs-64.h \
+ /usr/lib/gcc/x86_64-unknown-linux-gnu/5.1.0/include/stdint.h \
+ /usr/include/stdint.h /usr/include/bits/wchar.h scs_lib/scs_private.h \
+ scs_lib/scs.h crlibm_config.h /usr/include/fpu_control.h triple-double.h \
+ expm1.h
+
+/usr/include/stdc-predef.h:
+
+crlibm.h:
+
+crlibm_private.h:
+
+scs_lib/scs.h:
+
+scs_lib/../crlibm_config.h:
+
+/usr/include/inttypes.h:
+
+/usr/include/features.h:
+
+/usr/include/sys/cdefs.h:
+
+/usr/include/bits/wordsize.h:
+
+/usr/include/gnu/stubs.h:
+
+/usr/include/gnu/stubs-64.h:
+
+/usr/lib/gcc/x86_64-unknown-linux-gnu/5.1.0/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/bits/wchar.h:
+
+scs_lib/scs_private.h:
+
+scs_lib/scs.h:
+
+crlibm_config.h:
+
+/usr/include/fpu_control.h:
+
+triple-double.h:
+
+expm1.h:

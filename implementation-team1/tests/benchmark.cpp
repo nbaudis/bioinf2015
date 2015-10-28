@@ -112,13 +112,16 @@ inline void align_non_uniform(const std::vector<mlalign_Nucleotide>& as,
                               const std::vector<mlalign_Nucleotide>& bs,
                               std::vector<mlalign_Site>& result) {
   double pi[4] = {0.27, 0.24, 0.26, 0.23 };
+  const double lambda = 1.0;
+  const double mu = 2.0;
+  const double tau = 0.1;
   result.clear();
   result.resize(as.size() + bs.size());
   size_t size = result.size();
   double score = 0.0;
   mlalign_TKF91(const_cast<mlalign_Nucleotide*>(as.data()), as.size(),
                 const_cast<mlalign_Nucleotide*>(bs.data()), bs.size(),
-                1.0, 2.0, 0.1, pi, result.data(), &size, &score);
+                lambda, mu, tau, pi, result.data(), &size, &score);
 }
 
 inline void benchmark(const std::vector<Sequence>& sequences) {
