@@ -1,4 +1,3 @@
-
 %%%%%%%%%%%%%%%%%%%%%%% file typeinst.tex %%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % This is the LaTeX source for the instructions to authors using
@@ -55,7 +54,7 @@
 % their surnames. This ensures that the names appear correctly in
 % the running heads and the author index.
 %
-\author{Nikolai Baudis \and Pierre Barbera \and Sebastian Graf \and  Sarah Lutteropp \and Daniel Opitz \and Tomas Flouri \and Alexandros Stamatakis}
+\author{Nikolai Baudis \and Pierre Barbera \and Sebastian Graf \and  Sarah Lutteropp \and Daniel Opitz \and Tom\'{a}\v{s} Flouri \and Alexandros Stamatakis}
 %
 %\authorrunning{Efficient Open Source TKF91 Implementations}
 % (feature abused for this document to repeat the title also on left hand pages)
@@ -117,12 +116,12 @@ The algorithm is given by the following dynamic programming recurrence:
   M^2(i,j)&=\pi_{b_j}\lambda\beta(t)max\{M^1(i,j-1), M^2(i,j-1)\}
 \end{aligned}
 \]
-Where $\lambda$ and $\mu$ denote the birth and death rate, $\pi_x, x \in \{A,C,G,T\}$ denotes the equilibrium frequency of the nucleotides, 
-$P_{x \rightarrow y}$ the transition probability from $x$ to $y$, and $\overline{p_n}(t)$ the probability that after time $t$ a so-called mortal link has exactly $n$ descendants. 
+Where $\lambda$ and $\mu$ denote the birth and death rate, $\pi=(\pi_A,\pi_C,\pi_G,\pi_T)$ denotes the equilibrium frequency of the four nucleotides, 
+$P_{x \rightarrow y}$ the transition probability from state $x$ to $y$, and $\overline{p_n}(t)$ the probability that after time $t$ a so-called mortal link has exactly $n$ descendants. 
 As already mentioned, the values for $t$, $\lambda$, $\mu$, and $\pi$ are given as input. 
 The values $\overline{p_n}$ can be pre-computed in constant time. For more details, please refer to the original paper~\cite{felsenstein1981evolutionary} and the on-line 
 task specification at \url{http://sco.h-its.org/exelixis/web/teaching/practical15/description/tkf91.pdf}. {\bf TODO (Daniel) $\beta(t)$ is never mentioned in the text, although it appears in the equations. Right now I can not make up a catchy definition in words, is this even necessary when referencing the task-specification?}
-
+\textbf{TF: Also }$p_1(t)$\textbf{ does not seem to be defined}
 To the best of our knowledge, there is a limited amount of related work on optimizing the algorithm. 
 In 2000 Hein {\em et al.}\cite{hein2000statistical} presented several techniques for optimizing the algorithm. However, their focus was slightly different. One main 
 goal of the work was to conduct a ML estimate of the model parameters. This was achieved by implementing a banded DP that only fills DP cells
@@ -172,9 +171,9 @@ this is generally frustrating and hinders creativity.
 
 We thus decided to ask the students to implement efficient, sequential versions of the TKF91 algorithm that can also be used as library routines. 
 Since the DP algorithm as such, is relatively straight-forward to implement for a computer science student, the main focus was on code optimization. 
-The students were thus asked to implement a highly efficient version of the code in \texttt|C| or \texttt|C++| using all capabilities of a modern CPU (e.g., SSE3 and AVX intrinsics).
+The students were thus asked to implement a highly efficient version of the code in \texttt{C} or \texttt{C++} using all capabilities of a modern CPU (e.g., SSE3 and AVX intrinsics).
 The main motivation for this, was to give the students enough time to experiment with low-level optimization strategies on modern CPUs. 
-Moreover, this project allowed to apply a broad range of skills acquired in the Bioinformatics and other master-level modules at our department.
+Moreover, this project allowed the students to apply a broad range of skills acquired in the Bioinformatics and other master-level modules at our department.
 Furthermore, the TKF91 model required understanding and applying the discrete pair-wise sequence alignment methods and likelihood-based models for sequence evolution
 introduced in the lectures. 
 To foster competition among the teams, an award (dinner payed by A.S.) was announced for the team that would implement the fastest code. 
@@ -182,7 +181,7 @@ To allow for a fair comparison of the codes and the CPU-specific optimizations w
 4 physical cores (Intel i7-2600 running at 3.40GHz) and 16GB RAM. 
 
 In terms of project documentation, students are usually required to write a report. However, in the present case, we jointly took the decision to write a paper 
-about the practical and upload it to \texttt|biorxiv|. This has the positive effect that students also learn how to write scientific papers.
+about the practical and upload it to \texttt{bioarxiv}. This has the positive effect that students also learn how to write scientific papers.
 
 \subsection{Code Quality Assessment}
 In order to continuously monitor and improve the quality of our source codes, we used several tools and methods throughout our project.
@@ -195,7 +194,7 @@ flags\footnote{-Wall -Wextra -Wredundant-decls -Wswitch-default -Wimport -Wno-in
 -Wmissing-prototypes -Wnested-externs -Wstrict-prototypes -Wformat-nonliteral -Wundef}. 
 This allowed us to identify potential programming errors at an early stage. 
 Due to its more pedantic nature (i.e., ability to detect more errors), we also used the \texttt{clang} compiler with respective flags\footnote{-Weverything -pedantic} 
-periodically alongside of \texttt{gcc} to further reduce the amount of potential programming errors. Note that, \texttt|clang| conducts a static code analysis.
+periodically alongside of \texttt{gcc} to further reduce the amount of potential programming errors. Note that, \texttt{clang} conducts a static code analysis.
 
 \subsubsection{Dynamic Analyses}
 These analyses cover runtime issues, mainly memory leaks.
@@ -214,10 +213,10 @@ Section~\ref{ssec:dataalignment} outlines our considerations regarding the memor
 \subsection{Dynamic Programming and Wave-front Parallelism}
 \label{ssec:dynprogramming}
 
-DP is a widely-used technique to efficiently solve a class of, at first sight, apparently hard computational problems when they exhibit
-\texttt{overlapping subproblems} and \texttt{optimal substructure}. 
+DP is a widely-used technique to efficiently solve a class of, at first sight, apparently hard computational problems by breaking them down
+into a collection of simpler subproblems. The solutions to these subproblems are combined to reach an overall solution.
 Pair-wise sequence alignment falls into this class. 
-Another advantage of DP is that it is comparatively straight-forward to parallelize computations along the anti-diagonals 
+An advantage of using DP to compute pair-wise sequence alignment is that it is comparatively straight-forward to parallelize computations along the anti-diagonals 
 of the DPM. 
 This DPM parallelization approach is known as wave-front parallelism. 
 The underlying idea is that matrix entries along the same DP anti-diagonal $d$ can be computed independently from each other (and hence in parallel) 
@@ -241,7 +240,7 @@ It is layed out neither in a column-major nor row-major fashion, but stored line
   \label{fig:indexing}
 \end{figure}
 
-We index the matrices using a modified version of the \texttt{Cantor pairing function}, where a tuple is assigned to an offset. 
+We index the matrices using a modified version of the \textit{Cantor pairing function}, where a tuple is assigned to an offset. 
 The original Cantor pairing function $\pi$ assigns an integer to a pair of integers (e.g., $\pi: (\mathbb{N}, \mathbb{N}) \rightarrow \mathbb{N}$). 
 Since the size of the DPM is given by the length of the input sequences and because it is not infinite, 
 we modified the pairing function to accept a tuple of two integers from the interval $[0..\textrm{length}(\textrm{Sequence 1\textbar2})]$ as input. 
@@ -284,6 +283,8 @@ To this end, we evaluated the following three alternative matrix layouts (see Fi
   \label{fig:datalayout}
 \end{figure}
 
+\textbf{TF: It is not clear what variable n refers to in the following two paragraphs. I suppose it is the number of anti-diagonals right?}
+
 \paragraph*{Struct of Arrays (SoA)} ({\small\texttt{struct \{ double m0[n], m1[n], m2[n]; \} data;}}) 
 This layout allows for simple vector load and store operations. 
 However, the three DPMs are located in separate memory regions, which decreases
@@ -303,9 +304,14 @@ them, which requires several, potentially costly, vector shuffle operations.
 \end{figure}
 
 Figure~\ref{fig:shufflesse} illustrates these shuffle operations. 
-For $m_x^y$, the subscript $x$ indicates
-the index of the matrix and the superscript $y$ the SSE3/AVX vector element
-index $y$ {\bf TODO (Daneil) Is it correct to repeat the $y$ at the end of the sentence? I would also insert another verb as "denotes" ...and the superscript $y$ denotes the SS3/AVX...}.  The first row of the Figure depicts the {\em AoS} data layout. 
+W.l.o.g, for a particular position of an anti-diagonal, we denote with $m_x^y$
+that element $m$ of matrix with index $x$ is stored in slot $y$ of the SSE3/AVX
+vector.
+\textbf{TF: Daniel, would the previous sentence cover what you wanted to say?}
+%For $m_x^y$, the subscript $x$ indicates
+%the index of the matrix and the superscript $y$ the SSE3/AVX vector element
+%index $y$ {\bf TODO (Daneil) Is it correct to repeat the $y$ at the end of the sentence? I would also insert another verb as "denotes" ...and the superscript $y$ denotes the SS3/AVX...}. 
+The first row of the Figure depicts the {\em AoS} data layout. 
 Initially, we perform a vector \texttt{load} operation
 to load the data into temporary vector registers. 
 Thereafter, we shuffle the temporary vectors such that (i) each vector only contains elements from one of the three DP matrices and 
