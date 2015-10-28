@@ -8,3 +8,9 @@
   8. `$ make` possibly with `-jX` to build every X objects in parallel for better multi-core utilization.
   9. `$ ./TKF91Sequential -h` for instructions on how to use this.
 
+To then run the benchmarks, do
+  1. `$ cd tests`
+  2. `$ ../build/benchmark`
+
+Ignore the baseline measurements, there is just no other way to tell Celero to benchmark your code.
+

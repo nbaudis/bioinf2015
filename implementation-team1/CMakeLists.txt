@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(mlalign)
 
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Release, Debug" FORCE)
+endif ()
+
 # Compiler Warnings
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
