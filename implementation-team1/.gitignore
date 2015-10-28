@@ -1,0 +1,39 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Project specific amendments
+build/
+.idea/
+
+
+# Daniel's ignores for vim session and swap files and you complete me config
+Session.vim
+*.swp
+.ycm_extra_conf.py
+.ycm_extra_conf.pyc

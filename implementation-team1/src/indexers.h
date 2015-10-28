@@ -54,7 +54,7 @@ auto diagonalizedIndexer = [] (size_t rows, size_t cols, size_t align) {
     //       Remember that the first row contains initialized values that we don't want to change.
     //    2. The beginning of all other diagonals which don't start in the first row should be aligned.
     //
-    // For a 7x6 matrix and an alignment of 4, the indices should be like this:
+    // For a 7x5 matrix and an alignment of 4, the indices should be like this:
     //
     //   3  7 11 15 19 <- until this diagonal incl, we have the opening part
     //   8 12 16 20 24
