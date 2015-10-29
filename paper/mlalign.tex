@@ -102,8 +102,8 @@ in the hope that our findings and software will be useful to the community and s
 In \cite{TKF91}, Thorne, Kishino, and Felsenstein presented a method for pair-wise alignment of DNA sequences using a maximum likelihood (ML) approach.
 To this end, they developed an explicit statistical model of evolution that uses statistical insertions, deletions, and substitutions of nucleotides 
 as basic operations for comparing two DNA sequences. 
-An evolutionary model that is given as input in principle determines at which rate these three evolutionary events occur.  
-These are then used to design a dynamic programming algorithm that computes the ML pair-wise alignment between two DNA sequences. 
+An evolutionary model that is given as input \textbf{(Pierre) I stumbled here, possibly use commata to surround this clause?} in principle determines at which rate these three evolutionary events occur.  
+These are then used to design \textbf{(Pierre) not "used in the design of"? seemed weird to me. Also maybe add (DP) as it is used further down} a dynamic programming algorithm that computes the ML pair-wise alignment between two DNA sequences. 
 
 As substitution model, we assume the standard F81 stochastic model of nucleotide substitution~\cite{felsenstein1981evolutionary}. 
 The algorithm computes the optimal maximum likelihood sequence alignment using three matrices, one for each evolutionary event (i.e., substitution, deletion, and insertion).
@@ -378,7 +378,7 @@ Finally, this simplification reduces the number of possible memory layout and ve
 \label{fig:memo}
 \end{figure}
 
-At a later point of the project, it became evident that the indexed loads from the memoized penalty matrices $C^0$, $C^1$, $C^2$ as shown in Figure~\ref{fig:memo} 
+At a later point of the project, it became evident that the indexed loads from the memoized penalty matrices $C^0$, $C^1$, $C^2$ as shown in Figure\textbf{(Pierre)commata: , as ... 5, ?}~\ref{fig:memo} 
 caused a performance degradation. 
 To address this problem, we tried to pre-compute a larger lookup table of vector-sized elements, that we indexed by a specific nucleotide permutation. 
 Consider the following example for AVX vector intrinsics.
@@ -417,7 +417,7 @@ Although we ensured memory-aligned accesses to the majority of the data (as will
 Section~\ref{ssec:dataalignment}), we consistently used unaligned vector \texttt{load} and \texttt{store}
 operations (\texttt{loadu\_pd} and \texttt{storeu\_pd}) in the SSE3 and AVX versions of our code. 
 This does not deteriorate performance, since we did not observe a significant performance degradation when
-applying unaligned load intrinsics on aligned data.
+applying unaligned load intrinsics on aligned data. \textbf{(Pierre) The sentence structure suggests an explanation after the comma. Maybe start the sentence at "we"?}
 
 To prevent our \texttt{store} operations from overwriting data at the boundaries
 of the matrices, we ensured that for vectors with size $n < V$ (i.e.,
@@ -490,9 +490,9 @@ The Figure illustrates that ---omitting the asymptotically irrelevant boundary c
 \end{enumerate}
 
 For the computation, we need to perform three \texttt{load} operations in total for the blue, yellow, and green elements as well as one \texttt{store} operation for the red elements. 
-Since, based on empirical observations, {\em unaligned} \texttt{store} operations require more time than unaligned load operations, 
+Since, based on empirical observations, {\em unaligned} \texttt{store} operations require more time than unaligned load \textbf{(Pierre) texttt? also "unaligned" italization should probably be consistent} operations, 
 we ensured that either condition $1$ or $2$ above is always met. 
-Thus, we implemented our code such that, the first condition is met for the opening and intermediate part and the second condition holds true for the closing part of the DP matrices.
+Thus, we implemented our code such that, the first condition is met for the opening and intermediate part and the second condition holds true for the closing part of the DP matrices. 
 
 %We achieved an appropriate memory-alignment for each anti-diagonal by padding them as needed. 
 
@@ -508,6 +508,8 @@ Thereafter, we report how we improved data locality by storing the matrix entrie
 While we experimented with different vectorization techniques, it turned out that the fastest code did not rely on vectorization. 
 We thus conclude that, we managed to simplify the sequential code to such an extent, that, the potential advantages of using vector instructions 
 are amortized by the additional overhead (see Section~\ref{sec:vector}) we need for vectorization.
+\textbf{(Pierre) In retrospect, this sentence is probably a little awkward. My suggestion:
+ We conclude, that we managed to simplify the sequential code beyond the point, where the added overhead of introducing vectorization outweighed the benefits of vector parallelism.}
 
 \subsection{Mathematical Optimization - Basic Version}
 
@@ -523,7 +525,7 @@ We did not observe any numerical issues for the range of input parameter values 
 we tested.
 
 \subsubsection{Simplifying the Formulas}  
-We were able to omit redundant computations be re-using already computed values from previous matrix entries.
+We were able to omit redundant computations by re-using already computed values from previous matrix entries.
 For example, we observed that $$M^0(i+1,0) = M^0(i,0) + \log(\gamma_{i+1}) + \log(\zeta_{i+1}) + \log(\beta(t)) + \log(\pi_{a_{i+1}}) + \log(\bar{p_0}(t)).$$
 After replacing $\beta(t), \bar{p_0}(t), \gamma_i$, and $\zeta_i$ by their respective formulas, we noted that some terms appear multiple times. 
 Operating in log-space allowed us to further simplify the formulas. Especially the logarithmic rules $\log(a*b) = \log(a) + \log(b)$ and $\log(a/b) = \log(a) - \log(b)$ 
@@ -757,16 +759,16 @@ We denote the code obtained by applying the above storage scheme, the improved v
 \subsection{Vectorization Attempts}
 \label{sec:vector}
 During code development we conducted a partial vectorization for two of our implementations: 
-the basic log-space implementation (Section~\ref{sec:log}) and the improved log-space implementation (section~\ref{sec:caching}), using a more 
+the basic log-space implementation (Section~\ref{sec:log}) and the improved log-space implementation, using a more 
 cache-efficient data structure to store the matrices (Section~\ref{sec:caching}).
 
 In both cases we mainly focused on vectorizing the code that initializes the three matrices. 
-This is because, our analyses with \texttt{Valgrind callgrind} revealed that this 
+This is because our analyses with \texttt{Valgrind callgrind} revealed, that this 
 part of the code required $75-80\%$ of overall runtime. 
 \textbf{TODO (Nikolai) Doesn't this depend on the sequence length? I guess the
   complexity of the initialization increases linearly with increasing sequence length, while the
   DP step's complexity increases exponentially; so focusing on the DP step would
-  become more important for large sequences.}
+  become more important for large sequences. (Pierre) No, this is about the initialization of the matrices, which also scales in $n^2$. Our DP step only determines the maxima (see formulas)}
 Additionally, as the initializations are completely independent of each other, this part should be straight-forward to vectorize.
 
 Several code transformations were necessary to vectorize the code. 
@@ -798,7 +800,7 @@ To this end, we implemented load and store operations that fit our data structur
 These operations rely on vector functions that load and store single double precision floating point values. 
 An advantage of this is that we do not need to enforce correct data alignment any more. 
 However, a single  \texttt{\_mm\_load\_pd} on contiguous memory is substantially faster than a series of \texttt{\_mm\_loadl\_pd} and \texttt{\_mm\_loadh\_pd} operations
-on non-contiguous memory locations. {\bf TODO (Daniel) Only considering SSE3? since loadl and loadh are available only in SSE3}
+on non-contiguous memory locations. {\bf TODO (Daniel) Only considering SSE3? since loadl and loadh are available only in SSE3. (Pierre) I wasn't aware, but I guess the answer is yes.}
 
 
 \subsubsection{Thoughts on wave-front vectorization}
@@ -889,9 +891,9 @@ Thereafter, we measure the runtime of our code in Section~\ref{team2-runtimes}.
 
 In addition to the standard \texttt{log} function (from C++ \texttt{<math.h>}), 
 we also used the \texttt{crlibm} library by Daramy {\em et al.}~\cite{Daramy04}. 
-It includes versions of the logarithm function, which allow to explicitly specify the type of rounding strategy, namely rounding up, down, towards zero or towards the nearest integer, ({\bf for instance?}) to be used.
+It includes versions of the logarithm function, which allow to explicitly specify the type of rounding strategy, namely rounding up, down, towards zero or towards the nearest integer, ({\bf for instance? (Pierre) added instances}) to be used.
 
-To assess the correctness of our alignments, we computed the edit distance between the alignments {\bf how is the edit distance between alignments defined? This needs to be explained!} 
+To assess the correctness of our alignments, we computed the edit distance between the alignments {\bf how is the edit distance between alignments defined? This needs to be explained! (Pierre) done} 
 obtained by using different logarithm implementations. 
 The edit distance is a metric to quantify the difference between two strings. It counts the edit operations, insertions, deletions and substitutions, required to transform one string into the other. Each edit operation is assigned a cost value, resulting in a weighted sum of operations that form the final value.
 We assigned a cost of $1$ to insertions, deletions, and substitutions of single letters. 
@@ -962,7 +964,7 @@ As input sequences for measuring runtimes,  we used four pairs of randomly gener
 %The sequences did not contain ambiguous characters. 
 
 We measured the execution times around the kernel of the program, that is, excluding any I/O required to load parameters and input sequences, or the output of the program. The allocation and initialization of the three matrices are part of the kernel and as such were included in out measurements.
-{\bf mention if this included or excluded DP matrix init times}
+{\bf mention if this included or excluded DP matrix init times (Pierre) Done}
 We executed the kernel multiple times for each dataset and subsequently averaged the runtimes. 
 To balance accuracy and overall benchmark time (see Table~\ref{fig:runs}) we used different number of kernel runs, depending on the dataset size.
 
