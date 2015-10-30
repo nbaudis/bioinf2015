@@ -521,10 +521,10 @@ are amortized by the additional overhead (see Section~\ref{sec:vector}) we need 
 As the TKF91 algorithm performs successive multiplications of floating point numbers, preventing numerical underflow
 {\em is} a major issue. Underflow can occur, even for short input sequences with less than $100$ nucleotides each.
 To address this issue we transformed all computations into log-space, to add logarithms of probabilities instead of multiplying probabilities.
-While it is still possible to experience numerical problems, even after this transformation, 
+While it is still possible to experience numerical underflow problems, even after this transformation, 
 we expect that this is highly unlikely to occur for practical (empirical) input data.
-We did not observe any numerical issues for the range of input parameter values and sequence lengths (up to and including $10,000$ nucleotides) 
-we tested. \textbf{TF: This is not very clear. Perhaps change numerical issues to numerical underflows? Very long and very distant sequences could yield numerical issues}
+We did not observe any numerical underflow for the range of input parameter values and sequence lengths (up to and including $10,000$ nucleotides) 
+we tested. \textbf{TF: This is not very clear. Perhaps change numerical issues to numerical underflows? Very long and very distant sequences could yield numerical issues} \textbf{SL: Changed to numerical underflow issues}
 
 \subsubsection{Simplifying the Formulas}  
 We were able to omit redundant computations by re-using already computed values from previous matrix entries.
