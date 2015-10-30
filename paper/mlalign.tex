@@ -472,8 +472,10 @@ As a consequence, each anti-diagonal is aligned to an ``odd'' address ($a - 8$, 
 
 \begin{figure}[ht!]
   \centering
-  \includegraphics[scale=1.1]{figures/alignment.pdf}
-  \caption{Outline of the data accesses required for calculating an anti-diagonal}
+  \includegraphics[scale=1.1]{figures/alignment.pdf} \caption{Outline of the
+  data accesses required for calculating an anti-diagonal.\textbf{TF: I think
+  the diagram is rather confusing. Why not just draw a grayscale matrix with
+  arrows originating from the red cells to indicate dependencies? }}
   \label{fig:alignment}
 \end{figure}
 
@@ -520,16 +522,16 @@ To address this issue we transformed all computations into log-space, to add log
 While it is still possible to experience numerical problems, even after this transformation, 
 we expect that this is highly unlikely to occur for practical (empirical) input data.
 We did not observe any numerical issues for the range of input parameter values and sequence lengths (up to and including $10,000$ nucleotides) 
-we tested.
+we tested. \textbf{TF: This is not very clear. Perhaps change numerical issues to numerical underflows? Very long and very distant sequences could yield numerical issues}
 
 \subsubsection{Simplifying the Formulas}  
-We were able to omit redundant computations be re-using already computed values from previous matrix entries.
+We were able to omit redundant computations by re-using already computed values from previous matrix entries.
 For example, we observed that $$M^0(i+1,0) = M^0(i,0) + \log(\gamma_{i+1}) + \log(\zeta_{i+1}) + \log(\beta(t)) + \log(\pi_{a_{i+1}}) + \log(\bar{p_0}(t)).$$
 After replacing $\beta(t), \bar{p_0}(t), \gamma_i$, and $\zeta_i$ by their respective formulas, we noted that some terms appear multiple times. 
 Operating in log-space allowed us to further simplify the formulas. Especially the logarithmic rules $\log(a*b) = \log(a) + \log(b)$ and $\log(a/b) = \log(a) - \log(b)$ 
 allowed us to replace multiplications and divisions with additions and subtractions.
 
-In the following formulas, $1 \leq i \leq n$ and $1 \leq j \leq m$, if not noted otherwise.
+In the following formulas, $1 \leq i \leq n$ and $1 \leq j \leq m$, if not stated otherwise.
 
 \paragraph{Matrix Initialization}
 \label{sec:formulas:init}
@@ -549,6 +551,7 @@ M^2(0,1) &= \log(\gamma_0) + \log(\zeta_2) + \log(\pi_{b_1}) \\
 		&= \log(1- \frac{\lambda}{\mu}) + \log(1-\lambda*\beta) + \log(\lambda) + \log(\beta) + \log(\pi_{b_1}) \\
 M^2(0,j) &= M^2(0, i-1) + \log(\lambda) + \log(\beta) + \log(\pi_{b_i}), j \geq 2 \\
 \end{align*}
+\textbf{TF: I think the indices in the last equation should be j instead of i., i.e.} $M^2(0,j-1)$ and $\pi_{b_j}$
 
 \paragraph{Further Initialization}
 \label{sec:formulas:further}
@@ -584,7 +587,7 @@ introduced additional loss of precision {\bf TODO: with respect to the standard 
 when applying the respective conversion functions {\bf TODO: please name the conversion functions you used!}.
 Therefore, we abandoned this path.
 
-We denote the code obtained by applying the above techniques and transformations as the basic version.
+In the rest of the manuscript we refer to the code obtained by applying the above techniques and transformations as the basic version.
 
 \subsection{Matrix Storage Schemes - Improved Version}
 \label{sec:caching}
@@ -592,6 +595,7 @@ We denote the code obtained by applying the above techniques and transformations
 \subsubsection{Matrix as Array}
 In the first, na\"ive implementation, we stored each matrix ($M^0, M^1$, $M^2$) in a separate array, using row-major order. 
 The matrix entry at position $(i,j)$ is stored at index position $i*(m+1)+j$ in the array (see Figure~\ref{fig:rowmajor}).
+\textbf{TF: It is not a good practice to refer to a figure with a higher number andd then refer to a figure with a smaller number for the first time. Maybe place figure 10 on the top of this page such that it becomes 8}
 
 To illustrate the shortcomings of this approach, consider the following example: assume that six matrix rows fit into one cache line. 
 Then, performing one iteration of the inner DP loop requires loading three cache lines, one per DPM. 
@@ -602,7 +606,7 @@ every iteration would then force one of the lines to be swapped out and decrease
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{images/cachelines.pdf}
-\caption{Relation of cache lines and matrices, using the method of allocating each matrix separately(\textbf{a)}) and the Array-of-Structs method (\textbf{b)}). 
+\caption{Relation of cache lines and matrices, using the method of allocating each matrix separately(\textbf{a)} and the Array-of-Structs method (\textbf{b)}. 
 Each color represents a distinct cache line.}
 \label{fig:cachelines}
 \end{figure}
@@ -612,7 +616,7 @@ The dynamic programming step (see Algorithm~\ref{alg:dp}) accesses the matrices 
 Thus, we improved data locality by storing the entries from the three matrices located at identical index positions contiguously in memory. 
 For this, we implemented a data structure called \texttt{MatrixEntry} that consists of three double values: \texttt{$m_0$}, \texttt{$m_1$} and \texttt{$m_2$}. 
 Then, we used the Matrix as Array approach as before, but containing \texttt{MatrixEntry} structs as elements instead of simple 
-\texttt{double} values (see Figure~\ref{fig:aos}). 
+\texttt{double} values (see Figure~\ref{fig:aos}). \textbf{TF: The sentence is not very clear and must be re-written or re-formulated. The term Matrix as Array is not defined. Did you have SoA or AoS in mind?}
 
 Let us now consider the example in Figure~\ref{fig:cachelines} again. 
 With six matrix lines filling one cache line, a cache line now contains data from all three matrices. 
@@ -685,6 +689,7 @@ the entries of a single index for all three matrices. The structs are stored con
 \label{fig:aos}
 \end{figure}
 
+\textbf{TF: The term CO in Algorithm 1 should be defined in the manuscript at least, e.g. what it does and what it stands for}
 
 \subsubsection{Alternative Storage Schemes}
 \label{par:otherattempts}
