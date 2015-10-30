@@ -818,7 +818,7 @@ on non-contiguous memory locations. {\bf TODO (Daniel) Only considering SSE3? si
 %Crucially, the individual anti-diagonals have to be computed sequentially and in-order when dependencies exist between subsequent anti-diagonals. 
 %In this case, the current anti-diagonal is the front of the wave traversing the DP matrix.
 
-Our two log-space versions of TKF91 reduce the DP cell update calculations to determining the largest of two or three values. 
+Our two log-space versions of TKF91 reduce the DP cell update calculations that determine the largest of two or three values. 
 In turn, this means that the relative amount of time spent for DP cell updates is almost negligible. 
 Nevertheless, we invested time to explore potential vectorized wave-front versions of the program.
 
@@ -856,8 +856,9 @@ As test platform we used the aforementioned reference hardware (see Section~\ref
 \subsection{Results of Team I}
 \label{res-team-1}
 
-From each of the six MSAs, we picked ten sequences {\bf at random or how did you pick them???} and disaligned them.
-Then, we computed all possible 45 pairwise alignments between each set of ten sequences. 
+From each of the six MSAs, we picked ten sequences {\bf at random or how did
+you pick them???} and recomputed all possible 45 pairwise alignments between
+each set of ten sequences. 
 We found that the median of five samples, where each sample consisted of the average runtime for ten \texttt{iterations} 
 (i.e., $5*10*45 = 2250$ pair-wise alignments per dataset) 
 yielded stable runtime estimates. 
@@ -965,10 +966,10 @@ Logarithm Function & Average Edit Distance to Reference Alignment\\
 \subsection{Runtime Measurements}
 \label{team2-runtimes}
 
-As input sequences for measuring runtimes,  we used four pairs of randomly generated sequences with $10$, $100$, $1000$, and $10000$ nucleotides. 
+For measuring runtimes, we used four pairs of randomly generated sequences consisting $10$, $100$, $1000$, and $10000$ nucleotides, respectively. 
 %The sequences did not contain ambiguous characters. 
 
-We measured the execution times around the kernel of the program, that is, excluding any I/O required to load parameters and input sequences, or the output of the program. The allocation and initialization of the three matrices are part of the kernel and as such were included in out measurements.
+We measured the execution times around the kernel of the program, that is, excluding any I/O required to load parameters and input sequences, or the output of the program. The allocation and initialization of the three matrices are part of the kernel and as such were included in our measurements.
 {\bf mention if this included or excluded DP matrix init times (Pierre) Done}
 We executed the kernel multiple times for each dataset and subsequently averaged the runtimes. 
 To balance accuracy and overall benchmark time (see Table~\ref{fig:runs}) we used different number of kernel runs, depending on the dataset size.
@@ -1007,9 +1008,9 @@ library logarithm function \texttt{log\_ru} (Section~\ref{sec:crlibm}).}
 \subsection{What did Team I learn?}
 While the assigned task was straightforward and very manageable in principle,
 the implementation details were tricky.
-Preventing floating point underflow while optimizing performance at the same time represented a challenge. 
+Preventing floating point underflow while, at the same time, optimizing performance was challenging.
 This is because, such technical problems are frequently ignored in other programming practicals at KIT 
-that emphasize functionality. 
+that focus on functionality. 
 Furthermore, vectorizing with SIMD intrinsics required some rethinking and re-engineering 
 because we needed to identify a suitable memory layout, optimize data alignment, 
 and deal with boundary conditions (padding). 
@@ -1019,7 +1020,7 @@ which made prioritizing tasks important.
 We enjoyed the satisfaction of gaining yet another percent of execution time in combination 
 with working with SIMD instructions that were not familiar to us.
 
-The basic problem was clearly and outlined. There was enough freedom and time left 
+The basic problem was clearly outlined. There was enough freedom and time left 
 to work on improving our solution. The scheduled project milestones 
 turned procrastination and last minute work into a non-issue. 
 Most surprisingly, we were always on schedule.
@@ -1040,7 +1041,7 @@ To optimize the code we also used SSE3 and AVX intrinsics to vectorize the most 
 While we were unable to produce a faster vectorized code, we did learn how to use vector intrinsics and how to deal with the associated pitfalls. 
 The largest performance gain was attained via a more cache-efficient data structure. 
 For this, we used profiling tools such as \texttt{perf} and \texttt{clang} for the first time. 
-Finally,  we concluded that \texttt|C++| is appropriate for HPC projects, provided that, the problem and data-structures at hand are well understood.
+Finally,  we concluded that \texttt{C++} is appropriate for HPC projects, provided that, the problem and data-structures at hand are well understood.
 
 
 \section{Conclusion}
