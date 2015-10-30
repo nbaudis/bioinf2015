@@ -1,18 +1,16 @@
 cmake_minimum_required(VERSION 2.8.4)
+project(mlalign)
 
 if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Release, Debug" FORCE)
 endif ()
-
-
-project(mlalign)
 
 # Compiler Warnings
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL GNU OR
     CMAKE_CXX_COMPILER_ID STREQUAL Clang)
 
-    set(specific_flags "-std=c++11 -Wall  -Wunused-parameter -Wredundant-decls  -Wreturn-type  -Wswitch-default -Wunused-value -Wimport  -Wunused  -Wunused-function  -Wunused-label -Wno-int-to-pointer-cast -Wextra -Wredundant-decls -Wunused -Wunused-function -Wunused-parameter -Wunused-value  -Wunused-variable -Wformat  -Wformat-nonliteral -Wparentheses -Wsequence-point -Wuninitialized") 
+    set(specific_flags "-std=c++11 -Wall  -Wunused-parameter -Wredundant-decls  -Wreturn-type  -Wswitch-default -Wunused-value -Wimport  -Wunused  -Wunused-function  -Wunused-label -Wno-int-to-pointer-cast -Wmissing-declarations -Wextra -Wredundant-decls -Wunused -Wunused-function -Wunused-parameter -Wunused-value  -Wunused-variable -Wformat  -Wformat-nonliteral -Wparentheses -Wsequence-point -Wuninitialized") 
 
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL Clang)
 
@@ -72,3 +70,27 @@ target_link_libraries(libmlalign ${Vc_LIBRARIES})
 set(EXE_SOURCE_FILES src/main.cpp)
 add_executable(mlalign ${EXE_SOURCE_FILES})
 target_link_libraries(mlalign libmlalign)
+
+
+# The part below should be optional, turned off by default
+
+# Benchmark exectuable configuration
+
+set(CELERO_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/Celero-1.2.0/include")
+set(CELERO_COMPILE_DYNAMIC_LIBRARIES OFF CACHE BOOL "Compile Celero as a dynamic library")
+set(CELERO_ENABLE_EXPERIMENTS OFF CACHE BOOL "Set to ON to automatically build all examples.")
+
+add_subdirectory(Celero-1.2.0)
+include_directories(${CELERO_INCLUDE_DIRS})
+
+set(BENCHMARK_SOURCE_FILES tests/benchmark.cpp)
+
+add_executable(benchmark ${BENCHMARK_SOURCE_FILES} tests/benchmark.cpp)
+target_link_libraries(benchmark libmlalign celero)
+
+
+# Test configuration
+
+enable_testing()
+add_test(NAME python_tests COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/tests/run_tests.py mlalign)
+add_test(NAME benchmark WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests COMMAND benchmark)

@@ -33,9 +33,7 @@ void mlalign_TKF91(mlalign_Nucleotide *as, size_t na,
                    double *score);
 
 #ifdef __cplusplus
-
 }; // extern "C"
-
 #endif
 
 #endif // MLALIGN_MLALIGN_H

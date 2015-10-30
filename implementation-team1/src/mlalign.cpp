@@ -140,7 +140,6 @@ void mlalign_TKF91(mlalign_Nucleotide *as, size_t na, mlalign_Nucleotide *bs,
   /* DP algorithm */
   /****************/
 
-  // TODO: Implement these in circular queues.
   size_t top[3] = { 0, 0, SIZE_MAX };
   size_t bottom[3] { 1, 0, SIZE_MAX };
   // This is tricky. We store the corrected offsets for diagonals offset -1 and -2 (7, 3 resp.) and the
@@ -152,7 +151,7 @@ void mlalign_TKF91(mlalign_Nucleotide *as, size_t na, mlalign_Nucleotide *bs,
 
     // Topmost and bottommost row index of the diagonal,
     // skipping the already initialized first row and column (diagonal - 1 for that reason).
-    // It's helpful for intuition to visualize this (rows=7, cols=6):
+    // It's helpful for intuition to visualize this (rows=7, cols=5):
     //
     //   3  7 11 15 19
     //   8 12 16 20 24
@@ -209,7 +208,8 @@ void mlalign_TKF91(mlalign_Nucleotide *as, size_t na, mlalign_Nucleotide *bs,
         const size_t col = diagonal - row;
 
         if (row > bottom_without_first) {
-          // We would load from somewhere out of the matrix, so we just leave the
+          // We would load from somewhere out of the matrix, so we just leave
+          // the
           // other vector elements untouched
           break;
         }
@@ -223,6 +223,7 @@ void mlalign_TKF91(mlalign_Nucleotide *as, size_t na, mlalign_Nucleotide *bs,
       }
 
       // Compute the indexes of the top, left and top left cells and load them.
+
       const size_t ix_top = diagonal_offsets[1] + row_offset - 1 - top[1];
       assert(ix_top == idxM(row_offset - 1, diagonal - row_offset));
       const dvec max_top[3] = {

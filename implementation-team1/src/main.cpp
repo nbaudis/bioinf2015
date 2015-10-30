@@ -58,9 +58,9 @@ const option::Descriptor usage[] = {
                                                                                    "Options:"},
         {HELP,        0, "h", "help",       option::Arg::None,             "  --help, -h  \tPrint usage and exit."},
         {SEQUENCE1,   0, "a", "sequence-1", option::Arg::NucleotideString, "  --sequence-1, -a  \tFirst nucleotide sequence, string encoded."
-                                                                                   "                   Format: (A|C|G|T)*"},
+                                                                                   "Format: (A|C|G|T)*"},
         {SEQUENCE2,   0, "b", "sequence-2", option::Arg::NucleotideString, "  --sequence-2, -b  \tSecond nucleotide sequence, string encoded."
-                                                                                   "                  Format: (A|C|G|T)*"},
+                                                                                   "Format: (A|C|G|T)*"},
         {LAMBDA,      0, "l", "lambda",     option::Arg::Float,            "  --lambda, -l  \tBirth rate parameter"},
         {MU,          0, "m", "mu",         option::Arg::Float,            "  --mu, -mu  \tDeath rate parameter"},
         {TAU,         0, "t", "tau",        option::Arg::Float,            "  --tau, -t  \tTime delta"},
@@ -87,6 +87,7 @@ int main(int argc, char **argv) {
   option::Stats stats(usage, argc, argv);
   std::vector<option::Option> options(stats.options_max), buffer(stats.buffer_max);
   option::Parser parse(usage, argc, argv, options.data(), buffer.data());
+
 
   if (parse.error()) {
     return 1;
@@ -125,6 +126,7 @@ int main(int argc, char **argv) {
   pi[mlalign_G] = atof(options[PI_GUANINE].arg);
   pi[mlalign_T] = atof(options[PI_THYMINE].arg);
 
+
   std::vector<mlalign_Site> alignment(A.size() + B.size());
   size_t n;
   double score;
@@ -133,9 +135,9 @@ int main(int argc, char **argv) {
     auto startTime = std::chrono::system_clock::now();
     mlalign_TKF91(A.data(), A.size(), B.data(), B.size(), lambda, mu, tau, pi.data(), alignment.data(), &n, &score);
     alignment.resize(n);
-    auto endTime = std::chrono::system_clock::now();
+    auto stopTime = std::chrono::system_clock::now();
 
-    std::cout << "Run time: " << std::chrono::duration_cast<std::chrono::microseconds>(endTime-startTime).count() << " µs" << std::endl;
+    std::cout << "Run time: " << std::chrono::duration_cast<std::chrono::microseconds>(stopTime-startTime).count() << " µs" << std::endl;
 
     std::cout << "Found alignment of length " << n << " with score " << score << ":" << std::endl;
     for (auto site : alignment) {

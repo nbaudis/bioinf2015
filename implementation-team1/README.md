@@ -45,3 +45,9 @@ target `libmlalign`, dig into src/main.cpp:main and inspect the bottommost lines
 to call the only exported function `mlalign_TKF91`.
 
 Adding `libmlalign` to your dependencies is probably done the easiest via a CMake sub-project.
+
+To run the benchmarks, do
+  1. `$ cd tests`
+  2. `$ ../build/benchmark`
+
+Ignore the baseline measurements, there is just no other way to tell Celero to benchmark your code.
