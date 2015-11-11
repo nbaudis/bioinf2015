@@ -8,6 +8,7 @@
 \newlabel{sec:introduction}{{1}{1}}
 \citation{felsenstein1981evolutionary}
 \citation{hein2000statistical}
+\citation{holmes2001evolutionary}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Teaching Perspective, Goals and Course Outline}{3}}
 \newlabel{teaching}{{2}{3}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Teaching Setup \& Goals}{3}}
@@ -40,70 +41,75 @@
 \newlabel{ssec:dataalignment}{{3.5}{10}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Shift of the byte offset of the anti-diagonals}}{10}}
 \newlabel{fig:unaligned}{{6}{10}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Outline of the data accesses required for calculating an anti-diagonal}}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Outline of the data accesses required for calculating an anti-diagonal.\textbf  {TF: I think the diagram is rather confusing. Why not just draw a grayscale matrix with arrows originating from the red cells to indicate dependencies? }}}{11}}
 \newlabel{fig:alignment}{{7}{11}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Implementation of Team II}{11}}
 \newlabel{sec:implementation-2}{{4}{11}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Mathematical Optimization - Basic Version}{12}}
-\newlabel{sec:log}{{4.1}{12}}
-\@writefile{toc}{\contentsline {subsubsection}{Numerical Underflow Prevention}{12}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Mathematical Optimization - Basic Version}{11}}
+\newlabel{sec:log}{{4.1}{11}}
+\@writefile{toc}{\contentsline {subsubsection}{Numerical Underflow Prevention}{11}}
 \@writefile{toc}{\contentsline {subsubsection}{Simplifying the Formulas}{12}}
 \newlabel{sec:formulas:init}{{4.1}{12}}
+\@writefile{toc}{\contentsline {paragraph}{Matrix Initialization}{12}}
 \citation{boost}
-\@writefile{toc}{\contentsline {paragraph}{Matrix Initialization}{13}}
 \newlabel{sec:formulas:further}{{4.1}{13}}
 \@writefile{toc}{\contentsline {paragraph}{Further Initialization}{13}}
 \@writefile{toc}{\contentsline {paragraph}{Dynamic Programming Step}{13}}
 \@writefile{toc}{\contentsline {subsubsection}{Pre-computing the Logarithms}{13}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Matrix Storage Schemes - Improved Version}{14}}
-\newlabel{sec:caching}{{4.2}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{Matrix as Array}{14}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Relation of cache lines and matrices, using the method of allocating each matrix separately(\textbf  {a)}) and the Array-of-Structs method (\textbf  {b)}). Each color represents a distinct cache line.}}{14}}
-\newlabel{fig:cachelines}{{8}{14}}
-\@writefile{toc}{\contentsline {subsubsection}{Array-of-Structs Data Structure}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Matrix Storage Schemes - Improved Version}{13}}
+\newlabel{sec:caching}{{4.2}{13}}
+\@writefile{toc}{\contentsline {subsubsection}{Matrix as Array}{13}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Row-major indexing}}{14}}
+\newlabel{fig:rowmajor}{{8}{14}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Relation of cache lines and matrices, using the method of allocating each matrix separately(\textbf  {a)} and the Array-of-Structs method (\textbf  {b)}. Each color represents a distinct cache line.}}{14}}
+\newlabel{fig:cachelines}{{9}{14}}
+\@writefile{toc}{\contentsline {subsubsection}{Array-of-Structs Data Structure}{14}}
 \@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces The dynamic programming step, row-major version}}{15}}
 \newlabel{alg:dp}{{1}{15}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Array-of-Structs data structure for storing the three matrices in memory. Each \texttt  {MatrixEntry} element stores the entries of a single index for all three matrices. The structs are stored contiguously in row-major order.}}{15}}
+\newlabel{fig:aos}{{10}{15}}
 \newlabel{par:otherattempts}{{4.2}{15}}
 \@writefile{toc}{\contentsline {subsubsection}{Alternative Storage Schemes}{15}}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Array-of-Structs data structure for storing the three matrices in memory. Each \texttt  {MatrixEntry} element stores the entries of a single index for all three matrices. The structs are stored contiguously in row-major order.}}{16}}
-\newlabel{fig:aos}{{9}{16}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Row-major indexing}}{16}}
-\newlabel{fig:rowmajor}{{10}{16}}
 \@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Wave-front indexing}}{16}}
 \newlabel{fig:wavefront}{{11}{16}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Offsets in wave-front/anti-diagonal indexing}}{16}}
+\newlabel{fig:offset}{{12}{16}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Vectorization Attempts}{16}}
 \newlabel{sec:vector}{{4.3}{16}}
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Offsets in wave-front/anti-diagonal indexing}}{17}}
-\newlabel{fig:offset}{{12}{17}}
 \@writefile{toc}{\contentsline {subsubsection}{Log-space implementation}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{Version using Array of Structs data structure}{17}}
+\@writefile{toc}{\contentsline {subsubsection}{Thoughts on wave-front vectorization}{17}}
 \citation{bininda2005transalign}
-\@writefile{toc}{\contentsline {subsubsection}{Version using Array of Structs data structure}{18}}
-\@writefile{toc}{\contentsline {subsubsection}{Thoughts on wave-front vectorization}{18}}
 \@writefile{toc}{\contentsline {section}{\numberline {5}Evaluation and Testing}{18}}
 \newlabel{sec:evaluation}{{5}{18}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Test Data and Experimental Setup}{18}}
+\newlabel{ssec:benchmark}{{5.1}{18}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Results of Team I}{18}}
+\newlabel{res-team-1}{{5.2}{18}}
+\newlabel{tbl:benchmark-layout}{{5.2}{18}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Benchmark results for the SoA, AoS, and AoSoA storage schemes.}}{18}}
 \citation{Daramy04}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Benchmarks Data}{19}}
-\newlabel{ssec:benchmark}{{5.1}{19}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Results of Team I}{19}}
-\newlabel{res-team-1}{{5.2}{19}}
-\newlabel{tbl:benchmark}{{5.2}{19}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Benchmark results for SoA, AoS and AoSoA (from left to right)}}{19}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Results of Team II}{19}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Different Logarithm Libraries}{20}}
-\newlabel{sec:crlibm}{{5.4}{20}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Average edit distances from the \texttt  {Boost.Multiprecision} reference alignment for different logarithm implementations.}}{20}}
-\newlabel{fig:dist}{{2}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Runtime Measurements}{20}}
-\newlabel{team2-runtimes}{{5.5}{20}}
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Numerical alignment differences for input parameters $\pi :=(0.25,0.25,0.25,0.25), \lambda :=1, \mu := 2, \tau := 0.1$}}{21}}
-\newlabel{fig:alignments}{{13}{21}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Number of runs per sequence length}}{21}}
-\newlabel{fig:runs}{{3}{21}}
+\newlabel{res-team-2}{{5.3}{19}}
+\newlabel{sec:crlibm}{{5.3}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{Different Logarithm Libraries}{19}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Average edit distances from the \texttt  {Boost.Multiprecision} reference alignment for different logarithm implementations.}}{19}}
+\newlabel{fig:dist}{{2}{19}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Numerical alignment differences for input parameters $\pi :=(0.25,0.25,0.25,0.25), \lambda :=1, \mu := 2, \tau := 0.1$}}{20}}
+\newlabel{fig:alignments}{{13}{20}}
+\newlabel{team2-runtimes}{{5.3}{20}}
+\@writefile{toc}{\contentsline {subsubsection}{Runtime Measurements}{20}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Number of runs per sequence length}}{20}}
+\newlabel{fig:runs}{{3}{20}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Performance: Team I versus Team II}{20}}
+\newlabel{team-contest}{{5.4}{20}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Comparison of average runtimes of different implementations. \texttt  {sse3} and \texttt  {avx} post-fixes denote the vectorized versions of the programs, using SSE3 and AVX vector intrinsics (Section\nobreakspace  {}4.3\hbox {}). With \texttt  {log} we denote the log-space transformed versions of TKF91 (Section\nobreakspace  {}4.1\hbox {}). Versions using Arrays-of-Structs to store matrices (Section\nobreakspace  {}4.2\hbox {}) are denoted by \texttt  {caching}; \texttt  {round\_up} denotes versions relying on the \texttt  {crlibm} library logarithm function \texttt  {log\_ru} (Section\nobreakspace  {}5.3\hbox {}).}}{21}}
+\newlabel{fig:runtime}{{14}{21}}
 \@writefile{toc}{\contentsline {section}{\numberline {6}Teaching Results}{21}}
 \newlabel{teaching-results}{{6}{21}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.1}What did Team I learn?}{21}}
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Comparison of average runtimes of different implementations. \texttt  {sse3} and \texttt  {avx} post-fixes denote the vectorized versions of the programs, using SSE3 and AVX vector intrinsics (Section\nobreakspace  {}4.3\hbox {}). With \texttt  {log} we denote the log-space transformed versions of TKF91 (Section\nobreakspace  {}4.1\hbox {}). Versions using Arrays-of-Structs to store matrices (Section\nobreakspace  {}4.2\hbox {}) are denoted by \texttt  {caching}; \texttt  {round\_up} denotes versions relying on the \texttt  {crlibm} library logarithm function \texttt  {log\_ru} (Section\nobreakspace  {}5.4\hbox {}).}}{22}}
-\newlabel{fig:runtime}{{14}{22}}
+\newlabel{tbl:benchmark-teams}{{5.4}{22}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Performance comparison of TKF91 implementations by teams I \& II.}}{22}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2}What did Team II learn?}{22}}
 \citation{suchard2006bali}
 \bibstyle{plain}
@@ -111,9 +117,10 @@
 \bibcite{boost}{1}
 \bibcite{bininda2005transalign}{2}
 \bibcite{Daramy04}{3}
-\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{23}}
-\newlabel{conclusion}{{7}{23}}
 \bibcite{felsenstein1981evolutionary}{4}
 \bibcite{hein2000statistical}{5}
-\bibcite{suchard2006bali}{6}
-\bibcite{TKF91}{7}
+\bibcite{holmes2001evolutionary}{6}
+\bibcite{suchard2006bali}{7}
+\bibcite{TKF91}{8}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion}{23}}
+\newlabel{conclusion}{{7}{23}}
