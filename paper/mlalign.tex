@@ -279,7 +279,9 @@ the data has to be arranged accordingly.  Since we are using
 double-precision floating-point numbers for all calculations, an SSE3 vector
 ($128$ bit) can hold 2 values, while an AVX vector ($256$ bit) can hold 4 values.
 To this end, we evaluated the following three alternative matrix layouts (see Figure~\ref{fig:datalayout}), 
-where \verb|n|, always is the number of anti-diagonals. {\bf AS: is this correct?}
+where \verb|n| always is the number of elements in one matrix and \verb|m = n / v| the number of vectors per matrix for vector size \verb|v|.
+{\bf AS: is this correct?}
+{\bf NB: No, n is the number of elements in the matrix (i.e., n = length(seq\_a) * length(seq\_b)). I corrected that in the text and added a description for m as well.}
 
 \begin{figure}[ht!]
   \centering
@@ -290,7 +292,8 @@ where \verb|n|, always is the number of anti-diagonals. {\bf AS: is this correct
 
 
 \paragraph*{Struct of Arrays (SoA)} ({\small\texttt{struct \{ double m0[n], m1[n], m2[n]; \} data;}})
-Here, \verb|n|, is the number of anti-diagonals.
+% NB: With n being introduced in the previous paragraph, we probably won't need to describe this again.}
+% Here, \verb|n|, is the number of anti-diagonals.
 This layout allows for simple vector load and store operations.
 However, the three DPMs are located in separate memory regions, which decreases
 data locality and hence cache efficiency.
@@ -1011,7 +1014,17 @@ $10000$ & $10$ \\
 
 {\bf AS: TODO teams I and II, please include example command lines for these tests!} 
 
+{\bf NB: The Celero benchmark suite doesn't call the implementation from the
+  command line. Instead, the TKF functions are called and the time is measured.
+  See \url{https://github.com/sgraf812/bioinf2015/blob/master/implementation-team1/tests/benchmark.cpp#L122-L124}
+  and \url{https://github.com/sgraf812/bioinf2015/blob/master/implementation-team2/tests/benchmark.cpp#L117}
+  for the function calls.  The benchmark itself can be executed either through
+  CMake (\verb|ctest| in the build directory for our implementation) or by
+  manually compiling and executing the \verb|benchmark.cpp| file.}
+
 As described in~\ref{ssec:benchmark} we also compared the performance of the codes developed by teams I and II 
+{\bf NB: As explained in the previous comment, Celero measures the runtime of a
+complete function call instead of a single kernel invocation}
 on the aforementioned benchmark data set. In Table~\ref{tbl:benchmark-teams} we depict the runtimes for a single kernel invocation 
 in microseconds  as well as the runtime ratio with respect to the fastest implementation. 
 
