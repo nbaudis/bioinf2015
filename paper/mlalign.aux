@@ -41,7 +41,7 @@
 \newlabel{ssec:dataalignment}{{3.5}{10}}
 \@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Shift of the byte offset of the anti-diagonals}}{10}}
 \newlabel{fig:unaligned}{{6}{10}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Outline of the data accesses required for calculating an anti-diagonal.\textbf  {TF: I think the diagram is rather confusing. Why not just draw a grayscale matrix with arrows originating from the red cells to indicate dependencies? }}}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Outline of the data accesses required for calculating an anti-diagonal.}}{11}}
 \newlabel{fig:alignment}{{7}{11}}
 \@writefile{toc}{\contentsline {section}{\numberline {4}Implementation of Team II}{11}}
 \newlabel{sec:implementation-2}{{4}{11}}
@@ -51,20 +51,21 @@
 \@writefile{toc}{\contentsline {subsubsection}{Simplifying the Formulas}{12}}
 \newlabel{sec:formulas:init}{{4.1}{12}}
 \@writefile{toc}{\contentsline {paragraph}{Matrix Initialization}{12}}
+\newlabel{sec:formulas:further}{{4.1}{12}}
 \citation{boost}
-\newlabel{sec:formulas:further}{{4.1}{13}}
 \@writefile{toc}{\contentsline {paragraph}{Further Initialization}{13}}
 \@writefile{toc}{\contentsline {paragraph}{Dynamic Programming Step}{13}}
 \@writefile{toc}{\contentsline {subsubsection}{Pre-computing the Logarithms}{13}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Matrix Storage Schemes - Improved Version}{13}}
 \newlabel{sec:caching}{{4.2}{13}}
+\newlabel{mat-as-array}{{4.2}{13}}
 \@writefile{toc}{\contentsline {subsubsection}{Matrix as Array}{13}}
 \@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Row-major indexing}}{14}}
 \newlabel{fig:rowmajor}{{8}{14}}
 \@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Relation of cache lines and matrices, using the method of allocating each matrix separately(\textbf  {a)} and the Array-of-Structs method (\textbf  {b)}. Each color represents a distinct cache line.}}{14}}
 \newlabel{fig:cachelines}{{9}{14}}
 \@writefile{toc}{\contentsline {subsubsection}{Array-of-Structs Data Structure}{14}}
-\@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces The dynamic programming step, row-major version}}{15}}
+\@writefile{loa}{\contentsline {algocf}{\numberline {1}{\ignorespaces The dynamic programming step, row-major version, where $CO(i, j)$ maps the DP coordinates $i$ and $j$ to the linear index in the array of structs data structure.}}{15}}
 \newlabel{alg:dp}{{1}{15}}
 \@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Array-of-Structs data structure for storing the three matrices in memory. Each \texttt  {MatrixEntry} element stores the entries of a single index for all three matrices. The structs are stored contiguously in row-major order.}}{15}}
 \newlabel{fig:aos}{{10}{15}}
@@ -84,32 +85,32 @@
 \newlabel{sec:evaluation}{{5}{18}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Test Data and Experimental Setup}{18}}
 \newlabel{ssec:benchmark}{{5.1}{18}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Results of Team I}{18}}
-\newlabel{res-team-1}{{5.2}{18}}
-\newlabel{tbl:benchmark-layout}{{5.2}{18}}
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Benchmark results for the SoA, AoS, and AoSoA storage schemes.}}{18}}
+\newlabel{tbl:benchmark-layout}{{5.1}{18}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Team I benchmark results for the SoA, AoS, and AoSoA storage schemes. The fastest execution time is shown in bold font.}}{18}}
 \citation{Daramy04}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Results of Team I}{19}}
+\newlabel{res-team-1}{{5.2}{19}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Results of Team II}{19}}
 \newlabel{res-team-2}{{5.3}{19}}
 \newlabel{sec:crlibm}{{5.3}{19}}
 \@writefile{toc}{\contentsline {subsubsection}{Different Logarithm Libraries}{19}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Average edit distances from the \texttt  {Boost.Multiprecision} reference alignment for different logarithm implementations.}}{19}}
-\newlabel{fig:dist}{{2}{19}}
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Numerical alignment differences for input parameters $\pi :=(0.25,0.25,0.25,0.25), \lambda :=1, \mu := 2, \tau := 0.1$}}{20}}
+\newlabel{team2-runtimes}{{5.3}{19}}
+\@writefile{toc}{\contentsline {subsubsection}{Runtime Measurements}{19}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Team II: average edit distances from the \texttt  {Boost.Multiprecision} reference alignment for different logarithm implementations.}}{20}}
+\newlabel{fig:dist}{{2}{20}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Team II: Numerical alignment differences for input parameters $\pi :=(0.25,0.25,0.25,0.25), \lambda :=1, \mu := 2, \tau := 0.1$}}{20}}
 \newlabel{fig:alignments}{{13}{20}}
-\newlabel{team2-runtimes}{{5.3}{20}}
-\@writefile{toc}{\contentsline {subsubsection}{Runtime Measurements}{20}}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Number of runs per sequence length}}{20}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Team II: number of runs per sequence length}}{20}}
 \newlabel{fig:runs}{{3}{20}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Performance: Team I versus Team II}{20}}
-\newlabel{team-contest}{{5.4}{20}}
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Comparison of average runtimes of different implementations. \texttt  {sse3} and \texttt  {avx} post-fixes denote the vectorized versions of the programs, using SSE3 and AVX vector intrinsics (Section\nobreakspace  {}4.3\hbox {}). With \texttt  {log} we denote the log-space transformed versions of TKF91 (Section\nobreakspace  {}4.1\hbox {}). Versions using Arrays-of-Structs to store matrices (Section\nobreakspace  {}4.2\hbox {}) are denoted by \texttt  {caching}; \texttt  {round\_up} denotes versions relying on the \texttt  {crlibm} library logarithm function \texttt  {log\_ru} (Section\nobreakspace  {}5.3\hbox {}).}}{21}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces Team II: comparison of average runtimes of different implementations. \texttt  {sse3} and \texttt  {avx} post-fixes denote the vectorized versions of the programs (see Section\nobreakspace  {}4.3\hbox {}). With \texttt  {log} we denote the log-space transformed versions of TKF91 (Section\nobreakspace  {}4.1\hbox {}). Versions using an arrays of structs to store matrices (Section\nobreakspace  {}4.2\hbox {}) are denoted by \texttt  {caching}; \texttt  {round\_up} denotes versions relying on the \texttt  {crlibm} library logarithm function \texttt  {log\_ru} (Section\nobreakspace  {}5.3\hbox {}).}}{21}}
 \newlabel{fig:runtime}{{14}{21}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Teaching Results}{21}}
-\newlabel{teaching-results}{{6}{21}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}What did Team I learn?}{21}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Performance: Team I versus Team II}{21}}
+\newlabel{team-contest}{{5.4}{21}}
 \newlabel{tbl:benchmark-teams}{{5.4}{22}}
 \@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Performance comparison of TKF91 implementations by teams I \& II.}}{22}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Teaching Results}{22}}
+\newlabel{teaching-results}{{6}{22}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}What did Team I learn?}{22}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {6.2}What did Team II learn?}{22}}
 \citation{suchard2006bali}
 \bibstyle{plain}

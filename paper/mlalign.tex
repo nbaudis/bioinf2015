@@ -61,10 +61,12 @@
 
 % the affiliations are given next; don't give your e-mail address
 % unless you accept that it will be published
-\institute{Karlsruhe Institute of Technology, Institute of Theoretical Informatics,\\
-Kaiserstrasse. 12, 76131 Karlsruhe, Germany\\
-\mailsa\\
-\url{http://www.informatik.kit.edu/}}
+\institute{Karlsruhe Institute of Technology, Institute of Theoretical Informatics,\\ 
+Karlsruhe, Germany\\
+\and 
+Heidelberg Institute for Theoretical Studies,\\ Scientific Computing Group, Heidelberg, Germany\\
+\email{Alexandros.Stamatakis@h-its.org}\\
+\url{http://www.exelixis-lab.org/}}
 
 %
 % NB: a more complex sample for affiliations and the mapping to the
@@ -88,7 +90,7 @@ In the scientific part, the two student teams (Team I: Nikolai, Sebastian, Danie
 solutions for implementing efficient and numerically stable implementations of the TKF91 algorithm.
 The two teams worked independently on implementing the same algorithm. Hence, since the implementations yield identical results ---with slight numerical deviations---
 we are confident that the implementations are correct. We describe the optimizations applied and make them available as open-source codes
-in the hope that our findings and software will be useful to the community and similar programming practicals at other universities.
+in the hope that our findings and software will be useful to the community as well as for similar programming practicals at other universities.
 
 %In this documentation we describe our implementation of algorithmic DNA sequence alignment building on the TKF91 maximum likelihood evolutionary model. The goal of this project was to implement an application that computes the pairwise sequence alignment using the aforementioned model and that is highly optimized for performance. In order to maximize the performance, we utilized vectorization using SSE3 and AVX vector intrinsics. Further, we implemented optimizations such as an efficient memory layout, memoization, and address alignment, which all together keep overheads to a minimum. In addition, we ensured that our optimized program prevents numerical underflow.
 
@@ -122,8 +124,8 @@ $t$ a so-called mortal link has exactly $n$ descendants and one of these {\em is
 As already mentioned, the values for $t$, $\lambda$, $\mu$, and $\pi$ are given as input.
 Finally, $\beta(t)$ is defined as:
 $$\beta(t) := \frac{1 - e^{(\lambda-\mu)t}}{\mu - \lambda e^{(\lambda - \mu)t}}, \qquad 0 < \lambda < \mu.$$.
-Nota that, the values $\overline{p_n}$ can be pre-computed in constant time. For more details, please refer to the original paper~\cite{felsenstein1981evolutionary} and the on-line
-task specification at \url{http://sco.h-its.org/exelixis/web/teaching/practical15/description/tkf91.pdf}.
+Note that, the values $\overline{p_n}$ can be pre-computed in constant time. For more details, please refer to the original paper~\cite{felsenstein1981evolutionary} and the on-line
+task specification (see {\footnotesize \url{http://www.exelixis-lab.org/web/teaching/practical15/description/tkf91.pdf}}).
 
 To the best of our knowledge, there is a limited amount of related work on optimizing the algorithm.
 In 2000 Hein {\em et al.}\cite{hein2000statistical} presented several techniques for optimizing the algorithm. However, their focus was slightly different. One main
@@ -136,16 +138,16 @@ the term tabulation instead of lookup table or memoization we use here.
 Also, the authors do apparently not use a transformation into log space as we do here. Unfortunately, it was not possible to obtain
 a copy of the code to conduct comparisons to our implementations (pers.~comm with J.~Hein in August 2015).
 
-In addition there also exists an R package (see \url{http://cran.us.r-project.org/web/packages/TKF/TKF.pdf}) that implements the TKF91 model, but only for amino acid data.
+In addition there also exists an R package  that implements the TKF91 model (see \url{http://cran.us.r-project.org/web/packages/TKF/TKF.pdf}), but only for amino acid data.
 We did therefore not compare it to our implementations.
 
-Finally, the Handle package~\cite{holmes2001evolutionary} (\url{https://github.com/ihh/dart/tree/master/src/tkf}) comprises a TKF91 implementation that is 
+Finally, the Handle package~\cite{holmes2001evolutionary} comprises a TKF91 implementation  (see \url{https://github.com/ihh/dart/tree/master/src/tkf}) that is 
 used for constructing multiple sequence alignments in a Bayesian setting. Since the TKF91 calculations are embedded into a MCMC (Markov Chain Monte Carlo) framework, 
-it was not feasible to compare the performance of this TKF91 implementation with our implementations. Form a visual code insepction, it seems though, 
+it was not feasible to compare the performance of this TKF91 implementation with our implementations. Form a visual code inspection, it seems though, 
 that the implementation of TKF91 is rather straight-forward, that is, not particularly optimized.
 
 In the rest of the paper we refer to the dynamic programming paradigm as DP, and to dynamic programming matrices as DPM.
-The source codes developed by teams I and II are available for download at \url{https://github.com/nbaudis/bioinf2015} under the GNU GPL license.
+The source codes developed by teams I and II are available for download  under the GNU GPL license (see \url{https://github.com/nbaudis/bioinf2015}).
 
 The remainder of this paper is organized as follows: In Section~\ref{teaching}, we describe the teaching setup and goals.
 The teams then present their implementations in Sections~\ref{sec:implementation-1} and \ref{sec:implementation-2}, respectively.
@@ -184,7 +186,7 @@ To allow for a fair comparison of the codes and the CPU-specific optimizations w
 4 physical cores (Intel i7-2600 running at 3.40GHz) and 16GB RAM.
 
 In terms of project documentation, students are usually required to write a report. However, in the present case, we jointly took the decision to write a paper
-about the practical and upload it to \texttt{bioarxiv}. This has the positive effect that students also learn how to write scientific papers.
+about the practical and upload it to \texttt{biorxiv}. This has the positive effect that students also learn how to write scientific papers.
 
 \subsection{Code Quality Assessment}
 In order to continuously monitor and improve the quality of our source codes, we used several tools and methods throughout our project.
@@ -279,9 +281,8 @@ the data has to be arranged accordingly.  Since we are using
 double-precision floating-point numbers for all calculations, an SSE3 vector
 ($128$ bit) can hold 2 values, while an AVX vector ($256$ bit) can hold 4 values.
 To this end, we evaluated the following three alternative matrix layouts (see Figure~\ref{fig:datalayout}), 
-where \verb|n| always is the number of elements in one matrix and \verb|m = n / v| the number of vectors per matrix for vector size \verb|v|.
-{\bf AS: is this correct?}
-{\bf NB: No, n is the number of elements in the matrix (i.e., n = length(seq\_a) * length(seq\_b)). I corrected that in the text and added a description for m as well.}
+where \verb|n| always is the number of elements in one single DP matrix and \verb|m = n / v| is the number of vectors per matrix for a vector width of \verb|v|.
+
 
 \begin{figure}[ht!]
   \centering
@@ -481,9 +482,7 @@ As a consequence, each anti-diagonal is aligned to an ``odd'' address ($a - 8$, 
 \begin{figure}[ht!]
   \centering
   \includegraphics[scale=1.1]{figures/alignment.pdf} \caption{Outline of the
-  data accesses required for calculating an anti-diagonal.\textbf{TF: I think
-  the diagram is rather confusing. Why not just draw a grayscale matrix with
-  arrows originating from the red cells to indicate dependencies? }}
+  data accesses required for calculating an anti-diagonal.}
   \label{fig:alignment}
 \end{figure}
 
@@ -566,12 +565,14 @@ M^2(0,j) &= M^2(0, j-1) + \log(\lambda) + \log(\beta) + \log(\pi_{b_j}), j \geq 
 \begin{align*}
 M^0(i,j) &= \log(\lambda) + \log(\beta) + \log(\pi_{a_i}) \\
 M^1(i,j) &= \log(\lambda) - \log(\mu) + \log(\pi_{a_i}) + \log(\max\{P_{a_i \to b_j} * \bar{p_1}, \pi_{b_j} * \bar{p_1}\}) \\
-	&= \log(\lambda) - \log(\mu) + \log(\pi_{a_i}) + \log(1-\lambda * \beta) + \max \begin{cases}
+	&= \log(\lambda) - \log(\mu) + \log(\pi_{a_i}) + \log(1-\lambda * \beta) +\\ 
+&\max \begin{cases}
 	\log(P_{a_i \to b_j}) - \mu*t, \\
 	\log(\pi_{b_j}) + \log(1- e^{- \mu*t} - \mu * \beta)
 \end{cases} \\
 M^2(i,j) &= \log(\lambda) + \log(\beta) + \log(\pi_{b_j})
 \end{align*}
+
 
 \paragraph{Dynamic Programming Step}
 \begin{align*}
@@ -590,9 +591,8 @@ A major disadvantage of logarithmic transformations is that errors in the logari
 To further investigate this, we used the high precision mathematical library of the \texttt{boost}-framework \cite{boost}.
 It offers datatypes that dynamically adapt their floating point precision to avoid numerical errors as well as under-/overflow.
 Our initial idea was to use this library only for pre-computing the logarithms, and thereby reduce the induced runtime overhead.
-However, converting these arbitrary precision datatypes back into standard double precision floating point values
-introduced additional loss of precision {\bf AS: with respect to the standard log function?},
-when applying the respective conversion functions {\bf AS: please name the conversion functions you used!}.
+However, because we converted these arbitrary precision datatypes back into standard double precision floating point values (using \verb|convert_to<double>()|) for 
+increasing the speed of the actual DP calculations, we did not observe increased precision.
 Therefore, we abandoned this path.
 
 In the rest of the manuscript we refer to the code obtained by applying the above techniques and transformations as the basic version.
@@ -601,6 +601,7 @@ In the rest of the manuscript we refer to the code obtained by applying the abov
 \label{sec:caching}
 
 \subsubsection{Matrix as Array}
+\label{mat-as-array}
 In the first, na\"ive implementation, we stored each matrix ($M^0, M^1$, $M^2$) in a separate array, using row-major order.
 The matrix entry at position $(i,j)$ is stored at index position $i*(m+1)+j$ in the array (see Figure~\ref{fig:rowmajor}).
 
@@ -640,12 +641,13 @@ Each color represents a distinct cache line.}
 
 \subsubsection{Array-of-Structs Data Structure}
 The dynamic programming step (see Algorithm~\ref{alg:dp}) accesses the matrices $M^0, M^1$ and $M^2$ at the same index position to determine the maximum entry.
+
 Thus, we improved data locality by storing the entries from the three matrices located at identical index positions contiguously in memory.
 For this, we implemented a data structure called \texttt{MatrixEntry} that consists of three double values: \texttt{$m_0$}, \texttt{$m_1$} and \texttt{$m_2$}.
-Then, we used the Matrix as Array approach as before, but containing \texttt{MatrixEntry} structs as elements instead of simple
-\texttt{double} values (see Figure~\ref{fig:aos}). 
-\textbf{TF: The sentence is not very clear and must be re-written or re-formulated. 
-The term Matrix as Array is not defined. Did you have SoA or AoS in mind?}
+Then, we store the matrices linearly (see Section~\ref{mat-as-array}).
+In contrast to the initial approach, we only store one array and each array element now is a \texttt{MatrixEntry} struct instead of a simple
+\texttt{double} value (see Figure~\ref{fig:aos} and {\em SoA} as defined by team I in Section~\ref{ssec:memorylayout}). 
+
 
 Let us now consider the example in Figure~\ref{fig:cachelines} again.
 With six matrix lines filling one cache line, a cache line now contains data from all three matrices.
@@ -654,8 +656,9 @@ will access at most two cache lines.
 If we assume a cache capacity of two cache lines again, cache misses will now only occur when traversing row boundaries.
 
 By using the \texttt{perf stat} tool, we found that using the \texttt{MatrixEntry} data structure indeed reduced
-the number of page faults which we use as a proxy for cache efficiency.
-{\bf AS: why didn't you use cachegrind then if perf-stat yielded variable results and only reprts page faults?}
+the number of page faults which we use as a proxy for cache efficiency. 
+The number of page faults was a sufficient proxy for predicting cache-related performance. Thus, we 
+did not deploy more elaborate cache simulators such as \verb|cachegrind|.
 
 
 \begin{algorithm}
@@ -678,7 +681,7 @@ the number of page faults which we use as a proxy for cache efficiency.
 	}
 }
 
-\caption{The dynamic programming step, row-major version}
+\caption{The dynamic programming step, row-major version, where $CO(i, j)$ maps the DP coordinates $i$ and $j$ to the linear index in the array of structs data structure.}
 \label{alg:dp}
 \end{algorithm}
 
@@ -717,8 +720,6 @@ the number of page faults which we use as a proxy for cache efficiency.
 the entries of a single index for all three matrices. The structs are stored contiguously in row-major order.}
 \label{fig:aos}
 \end{figure}
-
-\textbf{TF: The term CO in Algorithm 1 should be defined in the manuscript at least, e.g. what it does and what it stands for}
 
 \subsubsection{Alternative Storage Schemes}
 \label{par:otherattempts}
@@ -793,7 +794,7 @@ had to replace all basic arithmetic operations by their vectorized counterparts.
 \subsubsection{Log-space implementation}
 For the vectorization of our basic version (see Section~\ref{sec:log}), we implemented an appropriate memory alignment
 by using the \texttt{\_\_attribute\_\_(aligned(\texttt{size}))} attribute for stack allocations,
-and the \texttt{posix\_memalign} function for heap allocations.
+and the respective \texttt{posix\_memalign} function for heap allocations.
 
 We also changed the iterations through the matrices to start at entry $0$ of each row, as starting iterations at position $1$
 would result in memory accesses at incorrectly aligned addresses.
@@ -857,8 +858,8 @@ in Section~\ref{sec:crlibm}.
 For testing and performance assessment, we used empirical benchmark datasets. We download multiple sequence alignments (MSAs) from \url{http://goo.gl/nlD4nb}
 that were used in~\cite{bininda2005transalign}.
 From each of the six MSAs, we selected ten sequences (e.g., for an MSA with $60$ sequences we extracted the sequences with indices $0, 6, 12, ..., 54$),
-and initially disaligned the sequences (removed all MSA gaps).
-Then, we computed all $45$ pairwise TKF91 alignments between
+and initially dis-aligned the sequences (removed all MSA gaps).
+Then, we computed all $45$ possible pairwise TKF91 alignments between
 these ten sequences. As input parameter values, we used $\lambda:=1.0, \mu:=2.0, \tau:=0.1, \pi:=(0.27, 0.24, 0.26, 0.23)$.
 We empirically determined that using median of five samples, where each sample corresponds to 
 the average runtime for ten TKF91 executions (i.e., a total of $5*10*45 = 2250$ pair-wise TKF91 alignments per dataset)
@@ -872,18 +873,7 @@ As test platform we used the aforementioned reference hardware (see Section~\ref
 In Sections~\ref{res-team-1} and~\ref{res-team-2} the two student teams present results of specific performance and accuracy issues they investigated in detail.
 In Section~\ref{team-contest} we compare the runtimes of the implementations developed by teams I and II.
 
-\subsection{Results of Team I}
-\label{res-team-1}
-
-
-As mentioned in Section~\ref{ssec:dataalignment}, we performed various performance tests using this benchmark suite.
-We tested different vector load/store schemes and measured the run times of the SoA, AoS, and AoSoA storage schemes.
-We show the results of the SoA versus AoS versus AoSoA runtime experiments in Table~\ref{tbl:benchmark-layout}.
-As already mentioned in Section~\ref{ssec:dataalignment}, the SoA approach performs best.
-
-
-
-\begin{table}[]
+\begin{table}[!]
 \centering
 \label{tbl:benchmark-layout}
 \begin{tabular}{llll}
@@ -895,8 +885,22 @@ RAG2                                                                            
 RBP3                                                                                      & {\bf 346.9 (1.00)} & 363.5 (1.05)       & 376.2 (1.08) \\
 vWF                                                                                       & {\bf 439.6 (1.00)} & 441.0 (1.00)       & 462.7 (1.05)
 \end{tabular}
-\caption{Benchmark results for the SoA, AoS, and AoSoA storage schemes.}
+\caption{Team I benchmark results for the SoA, AoS, and AoSoA storage schemes. The fastest execution time is shown in bold font.}
 \end{table}
+
+\subsection{Results of Team I}
+\label{res-team-1}
+
+
+
+As mentioned in Section~\ref{ssec:dataalignment}, we performed various performance tests using this benchmark suite.
+We tested different vector load/store schemes and measured the run times of the SoA, AoS, and AoSoA storage schemes.
+We show the results of the SoA versus AoS versus AoSoA runtime experiments in Table~\ref{tbl:benchmark-layout}.
+As already mentioned in Section~\ref{ssec:dataalignment}, the SoA approach performs best.
+
+
+
+
 
 \subsection{Results of Team II}
 \label{res-team-2}
@@ -922,13 +926,14 @@ For our tests, we aligned all possible pairs of sequences from the BDNF MSA in t
 
 For the alignments, we used $\lambda:=1, \mu:=2, \pi:= (0.27, 0.24, 0.26, 0.23)$ and $\tau := 0.1$.
 
-{\bf TODO: following paragraph need to be discussed on Firday!}
-In particular the \texttt{log\_ru} function from the \texttt{crlibm} library, which explicitly rounds up, produces a notably different alignment compared to
-\texttt{Boost.Multiprecision} reference alignment (see Table~\ref{fig:dist}).
-However, the computed likelihood scores were highly similar and the differences in the alignments were minimal {\bf between what and what?}{\bf SL: Tried to fix that. I still think it was pretty clear from the context as it was before.} between the version using \texttt{crlibm} and the version using \texttt{Boost.Multiprecision} as can be seen in Figure~\ref{fig:alignments}.
-We finally decided to use the \texttt{log\_ru} function from the \texttt{crlibm} library because it yielded the same results as the reference {\bf need to explain what we mean by reference impl} 
-implementation
-(\url{http://sco.h-its.org/exelixis/web/teaching/practical15/scaledCode/tkf91_scaling.tar.gz}) in most cases. {\bf SL: I thought we had chosen it because it was slightly faster than the other versions and Alexis recommended the use of crlibm instead of the standard $\log$ function?}
+In particular the \texttt{log\_ru} function from the \texttt{crlibm} library, 
+which explicitly rounds up, produces a different alignment than the
+\texttt{Boost.Multiprecision} version (see Table~\ref{fig:dist}).
+However, the computed likelihood scores were highly similar and edit distance between the alignments was minimal 
+between the \texttt{crlibm} and \texttt{Boost.Multiprecision} versions (see Figure~\ref{fig:alignments}).
+We finally decided to use the \texttt{log\_ru} function from the \texttt{crlibm} library because, in most cases, it yielded the same results as the sample
+solution provided by our instructors ({\small \url{http://www.exelixis-lab.org/web/teaching/practical15/scaledCode/tkf91_scaling.tar.gz}}). 
+%{\bf SL: I thought we had chosen it because it was slightly faster than the other versions and Alexis recommended the use of crlibm instead of the standard $\log$ function?}
 
 \begin{table}[h!]
 
@@ -943,7 +948,7 @@ Logarithm Function & Average Edit Distance to Reference Alignment\\
 \texttt{log\_ru} from \texttt{crlibm} & 33.15 \\
 \hline
 \end{tabular}
-\caption{Average edit distances from the \texttt{Boost.Multiprecision} reference alignment for different logarithm implementations.}
+\caption{Team II: average edit distances from the \texttt{Boost.Multiprecision} reference alignment for different logarithm implementations.}
 \label{fig:dist}
 \end{table}
 
@@ -974,20 +979,34 @@ Logarithm Function & Average Edit Distance to Reference Alignment\\
 \texttt{ACGACTAGTCA-GC-TACG-AT-CGA-CT-C-ATTCAACTGACTGACA-TCGACTTA} \\
 \texttt{A-GAG-AGTAATGCATACGCATGC-ATCTGCTATT\textcolor{red}{\underline{C---}}TG-CTG-CAGTGG--T-A}
 
-\caption{Numerical alignment differences for input parameters $\pi:=(0.25,0.25,0.25,0.25), \lambda:=1, \mu:= 2, \tau := 0.1$}
+\caption{Team II: Numerical alignment differences for input parameters $\pi:=(0.25,0.25,0.25,0.25), \lambda:=1, \mu:= 2, \tau := 0.1$}
 \label{fig:alignments}
 \end{figure}
 
 \subsubsection{Runtime Measurements}
 \label{team2-runtimes}
 
-For measuring runtimes druing code development, we used four pairs of randomly generated sequences consisting of $10$, $100$, $1000$, and $10000$ nucleotides, respectively.
+For measuring runtimes during code development, we used four pairs of randomly generated sequences consisting of $10$, $100$, $1000$, and $10000$ nucleotides, respectively.
 %The sequences did not contain ambiguous characters.
 
 We measured the execution times around the kernel of the program, that is, excluding any I/O required to load parameters and input sequences, or the output of the program. 
-The allocation and initialization of the three DPMs form part of the kernel and were teherfore included in our measurements.
+The allocation and initialization of the three DPMs form part of the kernel and were therefore included in our measurements.
 We executed the kernel multiple times for each dataset and subsequently averaged the runtimes.
-To balance accuracy and overall benchmark time (see Table~\ref{fig:runs}) we used disitinct numbers of kernel invocations, depending on the dataset size.
+To balance accuracy and overall benchmark time (see Table~\ref{fig:runs}) we used distinct numbers of kernel invocations, depending on the dataset size.
+
+The results of these runs are summarized in Figure~\ref{fig:runtime} for 7 distinct version of our code using different logarithm implementations, SSE3 and AVX intrinsics for 
+initializing the DPMs, and using the more cache-efficient array of structs storage scheme (denoted by \verb|_caching|).
+
+
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{images/benchplot.png}
+    \caption{Team II: comparison of average runtimes of different implementations. \texttt{sse3} and \texttt{avx} post-fixes denote the vectorized versions of the programs 
+(see Section~\ref{sec:vector}). With \texttt{log} we denote the log-space transformed versions of TKF91 (Section~\ref{sec:log}).
+Versions using an arrays of structs to store matrices (Section~\ref{sec:caching}) are denoted by \texttt{caching}; \texttt{round\_up} denotes versions relying on the \texttt{crlibm}
+library logarithm function \texttt{log\_ru} (Section~\ref{sec:crlibm}).}
+\label{fig:runtime}
+\end{figure}
 
 \begin{table}
 \centering
@@ -1005,40 +1024,20 @@ $1000$ & $100$ \\
 $10000$ & $10$ \\
 \hline
 \end{tabular}
-\caption{Number of runs per sequence length}
+\caption{Team II: number of runs per sequence length}
 \label{fig:runs}
 \end{table}
 
 \subsection{Performance: Team I versus Team II}
 \label{team-contest}
 
-{\bf AS: TODO teams I and II, please include example command lines for these tests!} 
-
-{\bf NB: The Celero benchmark suite doesn't call the implementation from the
-  command line. Instead, the TKF functions are called and the time is measured.
-  See \url{https://github.com/sgraf812/bioinf2015/blob/master/implementation-team1/tests/benchmark.cpp#L122-L124}
-  and \url{https://github.com/sgraf812/bioinf2015/blob/master/implementation-team2/tests/benchmark.cpp#L117}
-  for the function calls.  The benchmark itself can be executed either through
-  CMake (\verb|ctest| in the build directory for our implementation) or by
-  manually compiling and executing the \verb|benchmark.cpp| file.}
-
-As described in~\ref{ssec:benchmark} we also compared the performance of the codes developed by teams I and II 
-{\bf NB: As explained in the previous comment, Celero measures the runtime of a
-complete function call instead of a single kernel invocation}
-on the aforementioned benchmark data set. In Table~\ref{tbl:benchmark-teams} we depict the runtimes for a single kernel invocation 
-in microseconds  as well as the runtime ratio with respect to the fastest implementation. 
-
-{\bf TODO, not clear where Fig~\ref{fig:runtime} comes from, it's not referenced in the text anywhere}
-
-\begin{figure}[h!]
-\includegraphics[width=\textwidth]{images/benchplot.png}
-    \caption{Comparison of average runtimes of different implementations. \texttt{sse3} and \texttt{avx} post-fixes denote the vectorized versions of the programs,
-using SSE3 and AVX vector intrinsics (Section~\ref{sec:vector}). With \texttt{log} we denote the log-space transformed versions of TKF91 (Section~\ref{sec:log}).
-Versions using Arrays-of-Structs to store matrices (Section~\ref{sec:caching}) are denoted by \texttt{caching}; \texttt{round\_up} denotes versions relying on the \texttt{crlibm}
-library logarithm function \texttt{log\_ru} (Section~\ref{sec:crlibm}).}
-\label{fig:runtime}
-\end{figure}
-
+To test performance we deployed the Celero benchmark suite  that can directly measure the run-time (see \url{https://github.com/DigitalInBlue/Celero})
+of a single function call. We used the Celero suite to compare the performance of the codes developed by teams I and II on the aforementioned benchmark data set (see Section~\ref{ssec:benchmark}). 
+In Table~\ref{tbl:benchmark-teams} we depict the runtimes for a single kernel invocation 
+in milliseconds  as well as the runtime ratio with respect to the fastest implementation. 
+Note that, the run times correspond to the accumulated execution time over all $45$ possible pair-wise alignments 
+between the $10$ sequences we selected from each dataset. The performance comparison was set up jointly by the two teams to guarantee 
+a fair comparison. 
 
 
 \begin{table}[]
@@ -1081,7 +1080,7 @@ Most surprisingly, we were always on schedule.
 
 
 \subsection{What did Team II learn?}
-For this assignment we had to tackle two major problems: preventing the loss of precision generated by numerical underflow {\bf SL: And why did we ignore other types of precision loss? We could have used compensated summation to become a little more correct. However, this could have decreased the overall speed} and
+For this assignment we had to tackle two major problems: preventing numerical underflow  and
 pursuing the elusive ``most efficient'' implementation.
 In the early stages, we came up with the idea of transforming the algorithm into log-space to solve the numerical issues.
 This did not only prove to represent an efficient solution, but also allowed us to further simplify the formulas and to pre-compute the vast majority of terms.
